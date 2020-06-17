@@ -5,6 +5,35 @@
 ## Goal: 
   ensure 1% per day gain
 
+### Object structure
+
+# Bellows
+- set threshold (e.g.
+- set buy order 10 below
+main program
+  It buys bitcoin and records the price it was bought at, then sells it again at it's resale price
+  - populate wallet
+    - how do i pull from a coinbase (or similar) exchange wallet?
+  - buy bitcoin
+    - Bellows Schema
+      - connect wallet
+        - Problem: fees are higher from USD to BTC thann inter-coin trades
+          - Solution: Fiat wallet? 
+            - I thikn this is an exchannge specific interem wallet
+              - Problem: subject to government backinng, can cause hyperinflationn
+          - Solution: Exchange wallet?
+            - coinbase wallet
+        - Problem: 
+      - set up tracking database
+        - Track trades
+        - track exchange rates?
+      - set up real time data
+        - I cann manage queryinng on my applicationn end
+        - or i can pay for the websockets subscriptionn
+
+
+
+
 ### Schema
 
 |----------------|-----|--------------------------------------------|
@@ -13,6 +42,10 @@
 | purchase_price | int | set by transaction                         |
 | sell_threshold | int | set via service that calculates difference |
 
+
+| Exchange |  |
+|----------|--|
+| symbol   |  |
 
 ### Bellows Pattern
 
