@@ -3,6 +3,7 @@ from .api_connections.coinbase import CoinbaseApi
 from pynput.keyboard import Key, Listener
 import time
 
+#  [wipn] START HERE - connect to postgres
 class Cryptobot:
     interval = 10
     last_limit = get_current_btc_price()
