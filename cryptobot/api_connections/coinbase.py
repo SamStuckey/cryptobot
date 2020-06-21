@@ -8,6 +8,7 @@ class CoinbaseApi():
     cb_secret = config('CB_API_SKEY')
     cb_phrase = config('CB_PASSPHRASE')
     auth_client = cbpro.AuthenticatedClient(cb_key, cb_secret, cb_phrase)
+    client = cbpro.PublicClient()
 
     def __init__(self):
         self.accounts = self.auth_client.get_accounts()
@@ -20,3 +21,6 @@ class CoinbaseApi():
         for acc in self.accounts:
              if acc['currency'] == 'USD':
                  return acc['balance']
+
+    def get_current_btc_price(self):
+        self.client.currencies()
