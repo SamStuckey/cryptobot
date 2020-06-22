@@ -1,48 +1,35 @@
 from cryptobot.api_connections import shrimpy
 from cryptobot.api_connections.coinbase import CoinbaseApi
-from pynput.keyboard import Key, Listener
+from cryptobot.api_connections.robinhood import RobinhoodApi
 from decouple import config
 import time
 
 cb_client = CoinbaseApi()
 buy_threshold = 9400
 
-"""
-on load
-set buys in increments of -10 value down to ... what?
-    - each has a sell at price.
-    - sell at just triggers automatically every 10 seconds.
-
-selling is easy
-how / when do i buy?
-
-either preset
-or
-check price each 10 seconds and buy if down.  That   the problem is, do i risk missing out on several buys on the way down?  
-START HERE - figure out my buy strategy
-
-    - resale profit margin should be set higher as buy price goes down
-    - buy amount should increase as price goes down
-    1. preset buys below a certain threshold at run time.
-        - need to be re-ordered once the price goes back above this point.
-        - only place orders lower than current price
-    2. check in every 10 seconds.
-        - if price is below buy threshold then buy
-            - how much do i buy?  should it change based on the price change?
-
-"""
-
 class Cryptobot:
-    interval = 10
 
     def __init__(self):
-        self.do_run        = True
-        self.last_limit    = cb_client.get_current_btc_price()
+        self.buy_threshold = config('BUY_THRESHOLD')
+        self.buy_interval  = config('BUY_INTERVAL')
+        self.sell_interval = config('BUY_INTERVAL')
+
+    def _coinbase(self):
+        coinbase = coinbase or CoinbaseApi().client
+        return coinbase
+
+    def _robinhood(self):
+        robinhood = coinbase or RobinhoodApi().client
+        return robinhood
 
     def run(self):
+        self.last_limit = self._coinbase.get_current_btc_price()
         while True:
             self._process_transactions()
-            time.sleep(interval)
+            self._wait()
+
+    def _wait(self):
+        time.sleep(self.buy_interval)
 
     def _set_next_limit_buy():
         """ 
@@ -77,6 +64,17 @@ class Cryptobot:
         else:
             self._cancel_next_limit_buy()
             self._make_available_sales()
+
+    def _set_limit_buys()
+        # the 'instrument' is the STOCK i want to buy...
+            # TBD: what does this mean for bitcoin?
+        # index of instruments here: https://api.robinhood.com/instruments/
+        # instrument_url  https://api.robinhood.com/instruments/<instrument hash>
+        robinhood.place_limit_buy_order(instrument_URL=self,
+                                        symbol=self._symbol(),
+                                        time_in_force=self._time_in_force(),
+                                        price=self._price(),
+                                        quantity=self._quantity())
 
     def _cancel_next_limit_buy(self):
         print('canceling limit buys')
