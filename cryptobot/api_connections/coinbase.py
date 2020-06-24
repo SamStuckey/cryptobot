@@ -8,9 +8,9 @@ class CoinbaseApi():
     def accounts(self):
        self.auth_client.get_accounts()
 
-    def get_current_btc_price(self):
-        for currency in self.currencies():
-            if currency['symbol'] == 'BTC':
+    def get_price_for(self, symb):
+        for currency in self.client.get_currencies():
+            if currency['id'] == 'BTC':
                 return currency
 
     def balance_usd(self):

@@ -10,7 +10,7 @@ class Cryptobot:
         #  [wipn] deterimine what unit this uses and set it in the .env
         self.time_in_force  = config('TIME_IN_FORCE')
 
-    def run(self):
+    def __call__(self):
         while True:
             self.market_price = self._get_market_price()
             self._process_transactions()
