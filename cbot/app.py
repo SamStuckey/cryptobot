@@ -1,14 +1,15 @@
 from cbot.client import CoinbaseClient
 from cbot.client import RobinhoodClient
 from cbot.model import Order
+from cbot.query import btc_price_in_usd
+from cbot.transactor import buy, sell
 import time
 
 sleep_time = 1
 currency = 'BTC-USD'
 
 class Cbot:
-    def __init__(self, db, interval, time_in_force):
-        self.db             = db
+    def __init__(self, interval, time_in_force):
         self.interval       = interval
         self.time_in_force  = time_in_force
         self.cb_client      = CoinbaseClient()
@@ -17,14 +18,11 @@ class Cbot:
     def __call__(self):
         run = True
         while run:
-            self.market_price = self._btc_price()
+            self.market_price = btc_price_in_usd(currency)
             print(self.market_price)
             self._process_transactions()
             #  print(self.market_price)
             self._wait()
-
-    def _btc_price(self):
-        return self.cb_client.ticker(currency)['price']
 
     def _wait(self):
         time.sleep(sleep_time)
@@ -37,7 +35,7 @@ class Cbot:
     #  [wipn] hook me up to a DB
     def _sell_all_profitable_orders(self):
         for order in self._profitable_orders():
-            order.sell()
+            sell(order)
 
     def _time_to_buy(self):
         #  [wipn] make this work
@@ -52,6 +50,7 @@ class Cbot:
     def _place_market_buy(self):
         # index of instruments here: https://api.robinhood.com/instruments/
         # instrument_url  https://api.robinhood.com/instruments/<instrument hash>
+        #  [wipn] figure out what an instrument is, how to get it, and place an order
         robinhood.place_market_order(instrument_URL='wipn',
                                         symbol='BTC',
                                         time_in_force=self.time_in_force,
