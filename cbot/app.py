@@ -1,12 +1,14 @@
 from cbot.client import CoinbaseClient
 from cbot.client import RobinhoodClient
+from cbot.model import Order
 import time
 
 sleep_time = 1
 currency = 'BTC-USD'
 
 class Cbot:
-    def __init__(self, interval, time_in_force):
+    def __init__(self, db, interval, time_in_force):
+        self.db             = db
         self.interval       = interval
         self.time_in_force  = time_in_force
         self.cb_client      = CoinbaseClient()
