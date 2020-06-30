@@ -32,14 +32,3 @@ class RobinhoodClient():
 
     def buy(self):
         return rh_client.place_market_buy_order()
-
-    def instruments(self, symb):
-        return rh_client.instruments()
-
-    def buy(self)
-        rh_client.place_market_order(instrument_URL='wipn',
-                                    symbol='BTC',
-                                    time_in_force=self.time_in_force,
-                                    price=self._buy_price(),
-                                    quantity=quantity)
-
