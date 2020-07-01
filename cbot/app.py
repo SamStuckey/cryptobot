@@ -15,15 +15,23 @@ class Cbot:
         self.cb_client      = CoinbaseClient()
         self.rh_client      = RobinhoodClient()
 
+    #  [wipn] just for testing
     def __call__(self):
-        print(self.rh_client.instruments('asdf')
-        #  run = True
-        #  while run:
-        #      self.market_price = btc_price_in_usd(currency)
-        #      print(self.market_price)
-        #      self._process_transactions()
-        #      #  print(self.market_price)
-        #      self._wait()
+        print(self.rh_client.buy())
+
+    def _load_req_data(self):
+        self.account_url = self.rh_client.account()
+
+    #  [wipn] for real logic
+    #  def __call__(self):
+    #      self._load_req_data
+    #      run = True
+    #      while run:
+    #          self.market_price = btc_price_in_usd(currency)
+    #          print(self.market_price)
+    #          self._process_transactions()
+    #          #  print(self.market_price)
+    #          self._wait()
 
     def _wait(self):
         time.sleep(sleep_time)
