@@ -1,37 +1,29 @@
-from cbot.client import CoinbaseClient
-from cbot.client import RobinhoodClient
-from cbot.model import Order
-from cbot.query import btc_price_in_usd
-from cbot.transactor import buy, sell
+from cbot.client     import Client
+from cbot.model      import Order
+from cbot.query      import QueryEngine
+from cbot.transactor import TransactionEngine
 import time
 
 sleep_time = 1
 currency = 'BTC-USD'
 
 class Cbot:
+
     def __init__(self, interval, time_in_force):
-        self.interval       = interval
-        self.time_in_force  = time_in_force
-        self.cb_client      = CoinbaseClient()
-        self.rh_client      = RobinhoodClient()
+        self.interval      = interval
+        self.time_in_force = time_in_force
+        self.client        = Client()
+        self.query_engine  = QueryEngine(self.client)
+        self.transactor    = TransactionEngine(self.client)
 
-    #  [wipn] just for testing
     def __call__(self):
-        print(self.rh_client.buy())
-
-    def _load_req_data(self):
-        self.account_url = self.rh_client.account()
-
-    #  [wipn] for real logic
-    #  def __call__(self):
-    #      self._load_req_data
-    #      run = True
-    #      while run:
-    #          self.market_price = btc_price_in_usd(currency)
-    #          print(self.market_price)
-    #          self._process_transactions()
-    #          #  print(self.market_price)
-    #          self._wait()
+        run = True
+        while run:
+            self.market_price = btc_price_in_usd(currency)
+            print(self.market_price)
+            run = False
+            #  self._process_transactions()
+            #  self._wait()
 
     def _wait(self):
         time.sleep(sleep_time)

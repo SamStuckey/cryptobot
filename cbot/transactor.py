@@ -1,7 +1,12 @@
-def buy(orders):
-    print('buying: ', orders)
-    pass
+#  [wipn] STYART HERE
+class TransactionEngine():
+    def __init__(self, client):
+        self.client = client
 
-def sell(orders):
-    print('selling: ', orders)
-    pass
+    def buy(orders):
+        print('buying: ', orders)
+        pass
+
+    def sell(orders):
+        print('selling: ', orders)
+        pass

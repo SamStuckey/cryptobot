@@ -1,6 +1,6 @@
-from cbot.client import CoinbaseClient
+class QueryEngine():
+    def __init__(self, client):
+        self.client == client
 
-cb_client = CoinbaseClient()
-
-def btc_price_in_usd(currency):
-    return cb_client.ticker(currency)['price']
+    def btc_price_in_usd(currency):
+        return self.client.ticker(currency)['price']
