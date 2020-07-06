@@ -6,6 +6,8 @@ Session = sessionmaker(bind=engine)
 session = Session()
 
 class CRUD():
+    session = session
+
     def save(self):
          if self.id == None:
              session.add(self)
@@ -14,3 +16,9 @@ class CRUD():
     def destroy(self):
         session.delete(self)
         return session.commit()
+
+    def query(self, args):
+        return session.query(self, args)
+
+    def default_query(self):
+        return self.session.query(*self.structure)
