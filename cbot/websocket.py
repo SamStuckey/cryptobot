@@ -10,8 +10,5 @@ class Websocket(cbpro.WebsocketClient):
     #  [wipn] how the hell do i leverage this to trigger events at the top level?
     def on_message(self, msg):
         price = msg.get('price')
-        if self.execute:
-            print("executing on price: ", price)
-            Cbot()(price)
-        else:
-            print("skipping on price: ", price)
+        print("executing on price: ", price)
+        Cbot()(price)

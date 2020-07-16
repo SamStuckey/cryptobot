@@ -10,11 +10,14 @@ class Cbot:
         self.transactor = Transactor(self.client)
 
     def __call__(self, price):
-        self.price = price
-        self._sell_all_profitable_orders()
+        Order.profitable(current_price=price)
 
-        if self._time_to_buy():
-            self._place_market_buy()
+    #  def __call__(self, price):
+    #      self.price = price
+    #      self._sell_all_profitable_orders()
+    #
+    #      if self._time_to_buy():
+    #          self._place_market_buy()
 
     def _sell_all_profitable_orders(self):
         for order in self._profitable_orders():
