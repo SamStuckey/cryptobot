@@ -1,5 +1,9 @@
-from cbot.app import Cbot
-from decouple import config
+from cbot.websocket import Websocket
 
-cbot = Cbot()
-cbot()
+ws = Websocket()
+
+try:
+    ws.start()
+except:
+    ws.close()
+
