@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, MetaData, String
+from sqlalchemy import Column, Integer, MetaData, String, func
 from sqlalchemy.ext.declarative import declarative_base
 #  from sqlalchemy.ext.hybrid import hybrid_property
 from cbot.db    import CRUD
@@ -44,28 +44,31 @@ class Order(Base, CRUD):
 
     args = structure.keys()
 
-    def __init__(self,
-            buy_price=None,
-            thing=None):
-        #  self.id           = params['id']
-        self.buy_price = buy_price
-        #  self.sell_price   = params[2]
-        #  self.bought_at    = params[3]
-        #  self.sold_at      = params[4]
-        #  self.buy_usd_val  = params[5]
-        #  self.buy_btc_val  = params[6]
-        #  self.sell_usd_val = params[7]
-        #  self.sell_btc_val = params[8]
-        #  self.external_id  = params[9]
-
+    def __init__(self, params):
+        self.id           = params[0]
+        self.buy_price    = params[2]
+        self.sell_price   = params[2]
+        self.bought_at    = params[3]
+        self.sold_at      = params[4]
+        self.buy_usd_val  = params[5]
+        self.buy_btc_val  = params[6]
+        self.sell_usd_val = params[7]
+        self.sell_btc_val = params[8]
+        self.external_id  = params[9]
 
     @classmethod
     def profitable(self, current_price):
         if current_price is not None:
-            print(current_price)
-            orders = self.default_query(self).filter(self.sell_price <= Decimal(current_price)).all()
-            print(orders)
-        #  collection = []
-        #  for order in orders:
-        #      collection.append(self(order))
-        #  return collection
+            orders = self.default_query(self).filter(
+                    self.sell_price <= Decimal(current_price)).all()
+            collection = []
+            for order in orders:
+                collection.append(self(order))
+            return collection
+
+    #  [wipn] START HERE - get this to work
+    @classmethod
+    def lowest_bought_at(self):
+        order = self.session.query(self.structure, func.min(self.buy_usd_val))
+        print(order)
+        return self(order)

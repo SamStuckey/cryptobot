@@ -1,15 +1,20 @@
 currency = 'BTC-USD'
-variable_quantity = 10
-profit_requirement = 10 # need to figure this out with the fees and stuff
 
 class Transactor():
     def __init__(self, client):
         self.client = client
 
     def buy(self, orders):
-        print('buying: ', orders)
         pass
+        #  self.client.buy({'amount' => order.buy_btc_val,
+        #                  'currency' => 'BTC',
+        #                  'payment_method' => self._payment()
 
     def sell(self, order):
-        print('selling: ', order)
-        self.client.sell(order)
+        pass
+        #  self.client.sell({'amount' => order.buy_btc_val,
+        #                  'currency' => 'BTC',
+        #                  'payment_method' => self._payment()})
+
+    def _payment(self):
+        self.client.payment_methods.first
