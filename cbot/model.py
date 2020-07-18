@@ -29,46 +29,41 @@ class Order(Base, CRUD):
     sell_btc_val = Column('sell_btc_val', Integer)
     external_id  = Column('external_id', String)
 
-    structure = {
-        'id': id,
-        'buy_price': buy_price,
-        'sell_price': sell_price,
-        'bought_at': bought_at,
-        'sold_at': sold_at,
-        'buy_usd_val': buy_btc_val,
-        'buy_btc_val': buy_btc_val,
-        'sell_usd_val': sell_usd_val,
-        'sell_btc_val': sell_btc_val,
-        'external_id': external_id
-    }
+    attrs = [
+        'buy_price',
+        'sell_price',
+        'bought_at',
+        'sold_at',
+        'buy_usd_val'
+        'buy_btc_val'
+        'sell_usd_val'
+        'sell_btc_val'
+        'external_id'
+    ]
 
-    args = structure.keys()
-
-    def __init__(self, params):
-        self.id           = params[0]
-        self.buy_price    = params[2]
-        self.sell_price   = params[2]
-        self.bought_at    = params[3]
-        self.sold_at      = params[4]
-        self.buy_usd_val  = params[5]
-        self.buy_btc_val  = params[6]
-        self.sell_usd_val = params[7]
-        self.sell_btc_val = params[8]
-        self.external_id  = params[9]
+    def __repr__(self):
+        return '''
+        <Order(buy_price='%s', sell_price='%s', bought_at='%s',
+                sold_at='%s', buy_usd_val='%s', buy_btc_val='%s',
+                sell_usd_val='%s', sell_btc_val='%s', external_id='%s')>
+        ''' % (self.buy_price, self.sell_price, self.bought_at,
+               self.sold_at, self.buy_usd_val, self.buy_btc_val,
+               self.sell_usd_val, self.sell_btc_val, self.external_id) 
 
     @classmethod
     def profitable(self, current_price):
-        if current_price is not None:
-            orders = self.default_query(self).filter(
-                    self.sell_price <= Decimal(current_price)).all()
-            collection = []
-            for order in orders:
-                collection.append(self(order))
-            return collection
+        return self.query(self).filter(
+                self.sell_price <= Decimal(current_price)).all()
 
-    #  [wipn] START HERE - get this to work
     @classmethod
     def lowest_bought_at(self):
-        order = self.session.query(self.structure, func.min(self.buy_usd_val))
+        order = self.query(self).order_by(self.buy_price).first()
         print(order)
         return self(order)
+
+    @classmethod
+    #  [wipn] 2: make this save my orders correctly
+    def build_from_transaction(self, result):
+        print(result)
+        #  [wipn] 1: parse result
+        Order(parsed_result)
