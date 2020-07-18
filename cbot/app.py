@@ -5,7 +5,7 @@ from cbot.transactor import Transactor
 
 class Cbot:
     btc_purchase_increment = 10
-    usd_buy_amount         = 100
+    usd_buy_amount         = 10
     btc_required_increase  = 50
 
     def __init__(self):
@@ -18,27 +18,25 @@ class Cbot:
             self.price = price
             #  self._execute_sales()
             self._execute_purchase()
+            self._update_pending_orders()
 
-    # should never run, but worth keeping as a fail safe.  update logic to
-    # make sure i'm not trying to 'double sell' an order that is already set
-    # for limit sale.
     def _execute_sales(self):
         self._sell_all_profitable_orders()
 
+    def _update_pending_orders(self):
+        for order in Order.pending():
+            cb_record = self.client.get_order(order.external_id)
+            if cb_record.get('status') != 'pending':
+                order.update_from_cb(cb_record)
+
     def _execute_purchase(self):
         if self._time_to_buy():
-            new_order = self._place_market_buy()
-            self._set_limit_sale(new_order)
-            print('purchased: ', new_order)
+            self.transactor.market_buy(self.usd_buy_amount)
+            #  print('purchased: ', new_order)
 
     def _set_limit_sale(self, order):
         sell_price = new_order.buy_btc_val + self.btc_required_increase
         self.transactor.place_limit_sale(new_order, sell_price=sell_price)
-
-    def _place_market_buy(self):
-        result = self.transactor.market_buy(self.buy_amount)
-        order = Order.build_from_transaction(result)
-        return order
 
     #  [wipn] this probably doesn't need to happen, if i just set market sell orders
     #  when i buy
@@ -50,7 +48,8 @@ class Cbot:
     #  this also needs to account for upward moving buys, so basically what I own sets a range
     #  and I buy above or below in intervals..?
     def _time_to_buy(self):
-        return self._highest_buy_at() >= self.current_price
+        return True # wipn remove
+        #  return self._highest_buy_at() >= self.current_price
     
     def _profitable_orders(self):
         return Order.profitable(current_price=self.current_price)

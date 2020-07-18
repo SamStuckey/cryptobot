@@ -28,18 +28,7 @@ class Order(Base, CRUD):
     sell_usd_val = Column('sell_usd_val', Integer)
     sell_btc_val = Column('sell_btc_val', Integer)
     external_id  = Column('external_id', String)
-
-    attrs = [
-        'buy_price',
-        'sell_price',
-        'bought_at',
-        'sold_at',
-        'buy_usd_val'
-        'buy_btc_val'
-        'sell_usd_val'
-        'sell_btc_val'
-        'external_id'
-    ]
+    status       = Column('status', String)
 
     def __repr__(self):
         return '''
@@ -50,6 +39,9 @@ class Order(Base, CRUD):
                self.sold_at, self.buy_usd_val, self.buy_btc_val,
                self.sell_usd_val, self.sell_btc_val, self.external_id) 
 
+    ##################
+    ## QUERY SCOPES ##
+    ##################
     @classmethod
     def profitable(self, current_price):
         return self.query(self).filter(
@@ -62,8 +54,41 @@ class Order(Base, CRUD):
         return self(order)
 
     @classmethod
-    #  [wipn] 2: make this save my orders correctly
+    def pending(self):
+        self.query(self).filter(self.status == 'pending')
+
+    ###############
+    ## FACTORIES ##
+    ###############
+    #  'id': 'cc65dcd7-9aef-4f08-a6c7-28c5cd5ba373',
+    #  'product_id': 'BTC-USD',
+    #  'side': 'buy',
+    #  'stp': 'dc',
+    #  'funds': '9.95024875',
+    #  'specified_funds': '10',
+    #  'type': 'market',
+    #  'post_only': False,
+    #  'created_at': '2020-07-18T16:45:03.722006Z',
+    #  'fill_fees': '0',
+    #  'filled_size': '0',
+    #  'executed_value': '0',
+    #  'status': 'pending',
+    #  'settled': False
+    @classmethod
     def build_from_transaction(self, result):
-        print(result)
-        #  [wipn] 1: parse result
-        Order(parsed_result)
+        print('attempting to build with: ', result)
+        order = Order(
+                external_id=result.get('id'),
+                buy_usd_val=result.get('funds'),
+                created_at=result.get('created_at'),
+                status=result.get('status')
+            )
+        print('built order: ', order)
+        return order
+
+    #  [wipn] start here - im updating pending records that have since executed
+    def update_from_cb(record):
+        params = 
+        self
+
+
