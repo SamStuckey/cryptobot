@@ -1,14 +1,28 @@
+from sqlalchemy import Column, Integer, MetaData, String, func
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy                 import Column, Integer, MetaData, String, func
-from cbot.db                    import CRUD
-from decimal                    import Decimal
+#  from sqlalchemy.ext.hybrid import hybrid_property
+from cbot.db    import CRUD
+from decimal         import Decimal
 
 Base = declarative_base()
 
+# id INT GENERATED ALWAYS AS IDENTITY,
+# buy_price INT,
+# sell_price INT,
+# bought_at INT,
+# sold_at INT,
+# buy_usd_val INT,
+# buy_btc_val INT,
+# sell_usd_val INT,
+# sell_btc_val INT
 class Order(Base, CRUD):
     __tablename__ = 'orders'
 
     id           = Column(Integer, primary_key=True)
+    buy_price    = Column('buy_price', Integer)
+    sell_price   = Column('sell_price', Integer)
+    bought_at    = Column('bought_at', Integer)
+    sold_at      = Column('sold_at', Integer)
     buy_usd_val  = Column('buy_usd_val', Integer)
     buy_btc_val  = Column('buy_btc_val', Integer)
     sell_usd_val = Column('sell_usd_val', Integer)
@@ -18,12 +32,11 @@ class Order(Base, CRUD):
 
     def __repr__(self):
         return '''
-        <Order(buy_usd_val='%s',
-                buy_btc_val='%s',
-                sell_usd_val='%s',
-                sell_btc_val='%s',
-                external_id='%s')>
-        ''' % (self.buy_usd_val, self.buy_btc_val,
+        <Order(buy_price='%s', sell_price='%s', bought_at='%s',
+                sold_at='%s', buy_usd_val='%s', buy_btc_val='%s',
+                sell_usd_val='%s', sell_btc_val='%s', external_id='%s')>
+        ''' % (self.buy_price, self.sell_price, self.bought_at,
+               self.sold_at, self.buy_usd_val, self.buy_btc_val,
                self.sell_usd_val, self.sell_btc_val, self.external_id) 
 
     ##################
@@ -42,7 +55,7 @@ class Order(Base, CRUD):
 
     @classmethod
     def pending(self):
-        return self.query(self).filter(self.status == 'pending')
+        self.query(self).filter(self.status == 'pending')
 
     ###############
     ## FACTORIES ##
@@ -66,24 +79,17 @@ class Order(Base, CRUD):
         print('building with: ', record)
         order = Order(
                 external_id=record.get('id'),
-                buy_usd_val=Decimal(record.get('funds')),
-                buy_btc_val=Decimal(record.get('filled_size')),
-                sell_usd_val=Decimal(record.get('filled_size')),
-                sell_btc_val=Decimal(record.get('filled_size')),
+                buy_usd_val=record.get('funds'),
+                buy_btc_val=(record.get('filled_size') or self.buy_btc_val),
                 status=record.get('status')
             )
-        #  [wipn] START HERE - record is building, but not saving.  figure out why
-        # save to run as is, will not actually transact with coinbase because of
-        # stubbed #__call__ in app.py
-        self.session.add(order)
-        #  order.save
         print('built order: ', order)
         return order
 
     def update_from_cb(record):
         self.update(
                 external_id=(record.get('id') or self.external_id),
-                buy_usd_val=(Decimal(record.get('executed_value')) or self.buy_usd_val),
-                buy_btc_val=(Decimal(record.get('filled_size')) or self.buy_btc_val),
+                buy_usd_val=(record.get('executed_value') or self.buy_usd_val),
+                buy_btc_val=(record.get('filled_size') or self.buy_btc_val),
                 status=(record.get('status') or self.status)
             )

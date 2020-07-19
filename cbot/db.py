@@ -9,13 +9,16 @@ class CRUD():
     session = session
 
     def save(self):
-         if self.id == None:
-             session.add(self)
-         else:
-             self.update(self)
+         session.add(self)
+
+         #  if self.id == None:
+         #      session.add(self)
+         #  else:
+         #      self.update(self)
          return session.commit()
 
     def update(self, params={}):
+        self(params).save
     #  'id': 'cc65dcd7-9aef-4f08-a6c7-28c5cd5ba373',
     #  'product_id': 'BTC-USD',
     #  'side': 'buy',

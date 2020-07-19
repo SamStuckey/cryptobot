@@ -1,24 +1,32 @@
 from cbot.client     import Client
 from cbot.model      import Order
-from cbot.query      import Query
 from cbot.transactor import Transactor
+import time
+from cbot.db import session
 
 class Cbot:
     btc_purchase_increment = 10
-    usd_buy_amount         = 10
+    usd_buy_amount         = 5
     btc_required_increase  = 50
 
     def __init__(self):
         self.client     = Client()
-        self.query      = Query(self.client)
         self.transactor = Transactor(self.client)
 
+    #  [wipn] testing call
     def __call__(self, price):
-        if price is not None:
-            self.price = price
-            #  self._execute_sales()
-            self._execute_purchase()
-            self._update_pending_orders()
+        cb_rec = {'id': 'd3508523-78a9-4a1e-a9e2-eb9054527608', 'product_id': 'BTC-USD', 'side': 'buy', 'stp': 'dc', 'funds': '9.95024875', 'specified_funds': '10', 'type': 'market', 'post_only': False, 'created_at': '2020-07-19T15:36:39.654557Z', 'fill_fees': '0', 'filled_size': '0', 'executed_value': '0', 'status': 'pending', 'settled': False}
+        #  session.add(Order(cb_rec))
+        Order.create_from_cb(cb_rec)
+
+    #  [wipn] - keep
+    #  def __call__(self, price):
+    #      if price is not None:
+    #          self.price = price
+    #          #  self._execute_sales()
+    #          self._execute_purchase()
+    #          time.sleep(1)
+    #          self._update_pending_orders()
 
     def _execute_sales(self):
         self._sell_all_profitable_orders()
