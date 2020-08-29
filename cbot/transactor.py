@@ -8,6 +8,7 @@ class Transactor():
 
     def market_buy(self, amount):
         result = self.client.place_market_order(amount)
+        print(result)
         return Order.create_from_cb(result)
 
     def buy(self, orders):

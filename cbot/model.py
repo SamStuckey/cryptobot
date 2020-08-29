@@ -5,6 +5,12 @@ from decimal                    import Decimal
 
 Base = declarative_base()
 
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+engine = create_engine('postgresql://samuelstuckey:pass@localhost:5432/cryptobot')
+Session = sessionmaker(bind=engine)
+session = Session()
+
 class Order(Base, CRUD):
     __tablename__ = 'orders'
 
@@ -22,9 +28,11 @@ class Order(Base, CRUD):
                 buy_btc_val='%s',
                 sell_usd_val='%s',
                 sell_btc_val='%s',
-                external_id='%s')>
+                external_id='%s',
+                status='%s')>
         ''' % (self.buy_usd_val, self.buy_btc_val,
-               self.sell_usd_val, self.sell_btc_val, self.external_id) 
+               self.sell_usd_val, self.sell_btc_val,
+               self.external_id, self.status) 
 
     ##################
     ## QUERY SCOPES ##
@@ -63,7 +71,6 @@ class Order(Base, CRUD):
     #  'settled': False
     @classmethod
     def create_from_cb(self, record):
-        print('building with: ', record)
         order = Order(
                 external_id=record.get('id'),
                 buy_usd_val=Decimal(record.get('funds')),
@@ -75,9 +82,8 @@ class Order(Base, CRUD):
         #  [wipn] START HERE - record is building, but not saving.  figure out why
         # save to run as is, will not actually transact with coinbase because of
         # stubbed #__call__ in app.py
-        self.session.add(order)
-        #  order.save
-        print('built order: ', order)
+        session.add(order)
+        session.commit()
         return order
 
     def update_from_cb(record):

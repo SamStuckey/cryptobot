@@ -15,18 +15,20 @@ class Cbot:
 
     #  [wipn] testing call
     def __call__(self, price):
-        cb_rec = {'id': 'd3508523-78a9-4a1e-a9e2-eb9054527608', 'product_id': 'BTC-USD', 'side': 'buy', 'stp': 'dc', 'funds': '9.95024875', 'specified_funds': '10', 'type': 'market', 'post_only': False, 'created_at': '2020-07-19T15:36:39.654557Z', 'fill_fees': '0', 'filled_size': '0', 'executed_value': '0', 'status': 'pending', 'settled': False}
-        #  session.add(Order(cb_rec))
+        cb_rec = {'id': 'd3508523-78a9-4a1e-a9e2-eb9054527608', 'product_id': 'BTC-USD',
+                'side': 'buy', 'stp': 'dc', 'funds': '9.95024875', 'specified_funds': '10',
+                'type': 'market', 'post_only': False, 'created_at': '2020-07-19T15:36:39.654557Z', 'fill_fees': '0',
+                'filled_size': '0', 'executed_value': '0', 'status': 'pending', 'settled': False}
         Order.create_from_cb(cb_rec)
 
     #  [wipn] - keep
-    #  def __call__(self, price):
-    #      if price is not None:
-    #          self.price = price
-    #          #  self._execute_sales()
-    #          self._execute_purchase()
-    #          time.sleep(1)
-    #          self._update_pending_orders()
+    def __call__(self, price):
+        if price is not None:
+            self.price = price
+            #  self._execute_sales()
+            self._execute_purchase()
+            #  time.sleep(1)
+            #  self._update_pending_orders()
 
     def _execute_sales(self):
         self._sell_all_profitable_orders()
@@ -40,7 +42,6 @@ class Cbot:
     def _execute_purchase(self):
         if self._time_to_buy():
             self.transactor.market_buy(self.usd_buy_amount)
-            #  print('purchased: ', new_order)
 
     def _set_limit_sale(self, order):
         sell_price = new_order.buy_btc_val + self.btc_required_increase

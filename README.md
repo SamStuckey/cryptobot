@@ -100,7 +100,7 @@ requests.exceptions.ConnectionError: HTTPConnectionPool(host='nummus.robinhood.c
 
 ## TODO:
 1. place order
-  - successfully trigger market buy
+  - successfully trigger market buy [DONE]
   - record transaction to database with applicable feilds
 
 2. load profitable orders
