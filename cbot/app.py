@@ -14,25 +14,30 @@ class Cbot:
         self.transactor = Transactor(self.client)
 
     #  [wipn] testing call
-    def __call__(self, price):
-        cb_rec = {'id': 'd3508523-78a9-4a1e-a9e2-eb9054527608', 'product_id': 'BTC-USD',
-                'side': 'buy', 'stp': 'dc', 'funds': '9.95024875', 'specified_funds': '10',
-                'type': 'market', 'post_only': False, 'created_at': '2020-07-19T15:36:39.654557Z', 'fill_fees': '0',
-                'filled_size': '0', 'executed_value': '0', 'status': 'pending', 'settled': False}
-        Order.create_from_cb(cb_rec)
+    #  def __call__(self, price):
+    #      cb_rec = {'id': 'd3508523-78a9-4a1e-a9e2-eb9054527608', 'product_id': 'BTC-USD',
+    #              'side': 'buy', 'stp': 'dc', 'funds': '9.95024875', 'specified_funds': '10',
+    #              'type': 'market', 'post_only': False, 'created_at': '2020-07-19T15:36:39.654557Z', 'fill_fees': '0',
+    #              'filled_size': '0', 'executed_value': '0', 'status': 'pending', 'settled': False}
 
     #  [wipn] - keep
     def __call__(self, price):
         if price is not None:
             self.price = price
+
+            #  [wipn] not tested yet
             #  self._execute_sales()
-            self._execute_purchase()
-            #  time.sleep(1)
-            #  self._update_pending_orders()
+
+            #  [wipn] this works
+            #  self._execute_purchase()
+
+            time.sleep(1)
+            self._update_pending_orders()
 
     def _execute_sales(self):
         self._sell_all_profitable_orders()
 
+    #  [wipn] START HERE - saving works on session, but never persists to PG
     def _update_pending_orders(self):
         for order in Order.pending():
             cb_record = self.client.get_order(order.external_id)

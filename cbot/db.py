@@ -9,14 +9,11 @@ class CRUD():
     session = session
 
     def save(self):
-        print('hii')
-        session.add(self)
-        print(session)
-
         #  if self.id == None:
         #      session.add(self)
         #  else:
         #      self.update(self)
+        session.add(self)
         return session.commit()
 
     def update(self, params={}):

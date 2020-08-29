@@ -1,7 +1,8 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy                 import Column, Integer, MetaData, String, func
 from cbot.db                    import CRUD
-from decimal                    import Decimal
+from decimal                    import Decimal, getcontext
+from sqlalchemy.orm.attributes import flag_modified
 
 Base = declarative_base()
 
@@ -12,6 +13,8 @@ Session = sessionmaker(bind=engine)
 session = Session()
 
 class Order(Base, CRUD):
+    getcontext().prec = 9
+
     __tablename__ = 'orders'
 
     id           = Column(Integer, primary_key=True)
@@ -45,12 +48,15 @@ class Order(Base, CRUD):
     @classmethod
     def lowest_bought_at(self):
         order = self.query(self).order_by(self.buy_price).first()
-        print(order)
         return self(order)
 
     @classmethod
     def pending(self):
-        return self.query(self).filter(self.status == 'pending')
+        return self.query(self).filter(self.status == 'pending').all()
+
+    @classmethod
+    def all(self):
+        return self.query(self).all()
 
     ###############
     ## FACTORIES ##
@@ -79,17 +85,15 @@ class Order(Base, CRUD):
                 sell_btc_val=Decimal(record.get('filled_size')),
                 status=record.get('status')
             )
-        #  [wipn] START HERE - record is building, but not saving.  figure out why
-        # save to run as is, will not actually transact with coinbase because of
-        # stubbed #__call__ in app.py
         session.add(order)
         session.commit()
         return order
 
-    def update_from_cb(record):
-        self.update(
-                external_id=(record.get('id') or self.external_id),
-                buy_usd_val=(Decimal(record.get('executed_value')) or self.buy_usd_val),
-                buy_btc_val=(Decimal(record.get('filled_size')) or self.buy_btc_val),
-                status=(record.get('status') or self.status)
-            )
+    def update_from_cb(self, record):
+        self.buy_usd_val=Decimal(record.get('executed_value'))
+        self.buy_btc_val=Decimal(record.get('filled_size'))
+        self.status=record.get('status')
+        #  [wipn] START HERE - works, and order can even be reloaded and seen to
+        #  have been changed, but when i check in PG i see it was not saved
+        session.commit()
+        return self
