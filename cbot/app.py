@@ -28,16 +28,15 @@ class Cbot:
             #  [wipn] not tested yet
             #  self._execute_sales()
 
-            #  [wipn] this works
+            #  [wipn] this works in cb and successfully writes to my db
             #  self._execute_purchase()
 
-            time.sleep(1)
+            #  time.sleep(1)
             self._update_pending_orders()
 
     def _execute_sales(self):
         self._sell_all_profitable_orders()
 
-    #  [wipn] START HERE - saving works on session, but never persists to PG
     def _update_pending_orders(self):
         for order in Order.pending():
             cb_record = self.client.get_order(order.external_id)

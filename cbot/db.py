@@ -9,6 +9,7 @@ class CRUD():
     session = session
 
     def save(self):
+        print('saving')
         #  if self.id == None:
         #      session.add(self)
         #  else:

@@ -2,7 +2,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy                 import Column, Integer, MetaData, String, func
 from cbot.db                    import CRUD
 from decimal                    import Decimal, getcontext
-from sqlalchemy.orm.attributes import flag_modified
+from sqlalchemy.orm.attributes  import flag_modified
 
 Base = declarative_base()
 
