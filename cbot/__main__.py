@@ -3,9 +3,9 @@ from cbot.websocket import Websocket
 #  [wipn] keep
 #  ws = Websocket()
 #  try:
-#      ws.start()
+    #  ws.start()
 #  except:
-#      ws.close()
+    #  ws.close()
 
 #  [wipn] for single fire testing
 from cbot.app import Cbot

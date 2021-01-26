@@ -10,20 +10,23 @@ class Cbot:
     btc_required_increase  = 50
 
     def __init__(self):
-        self.client     = Client()
-        self.transactor = Transactor(self.client)
+        self.uninitialized = True
+        self.client        = Client()
+        self.transactor    = Transactor(self.client)
 
-    #  [wipn] testing call
-    #  def __call__(self, price):
-    #      cb_rec = {'id': 'd3508523-78a9-4a1e-a9e2-eb9054527608', 'product_id': 'BTC-USD',
-    #              'side': 'buy', 'stp': 'dc', 'funds': '9.95024875', 'specified_funds': '10',
-    #              'type': 'market', 'post_only': False, 'created_at': '2020-07-19T15:36:39.654557Z', 'fill_fees': '0',
-    #              'filled_size': '0', 'executed_value': '0', 'status': 'pending', 'settled': False}
-
-    #  [wipn] - keep
     def __call__(self, price):
+        if self.uninitialized:
+            self.uninitialized = False
+            #  self.action_ceiling = price +
+            #  self.action_floor = price -
+
         if price is not None:
             self.price = price
+
+            #  [wipn] START HERE - polish the algorythm and test sales
+            # if price is 10 greater than last, buy
+            #  if price is 10 less than last, sell all profitable
+            # profitable means selling recoups original  Plus cost of selling
 
             #  [wipn] not tested yet
             #  self._execute_sales()
@@ -31,8 +34,7 @@ class Cbot:
             #  [wipn] this works in cb and successfully writes to my db
             #  self._execute_purchase()
 
-            #  time.sleep(1)
-            self._update_pending_orders()
+            #  self._update_pending_orders()
 
     def _execute_sales(self):
         self._sell_all_profitable_orders()
@@ -40,28 +42,27 @@ class Cbot:
     def _update_pending_orders(self):
         for order in Order.pending():
             cb_record = self.client.get_order(order.external_id)
-            if cb_record.get('status') != 'pending':
-                order.update_from_cb(cb_record)
+
+            if self._needs_update(cb_record.get('status'), order.status):
+                order.execute_purchase(cb_record)
+
+    def _needs_update(self, ext_status, int_status):
+        return ext_status != 'pending' and ext_status != int_status
 
     def _execute_purchase(self):
         if self._time_to_buy():
             self.transactor.market_buy(self.usd_buy_amount)
 
-    def _set_limit_sale(self, order):
-        sell_price = new_order.buy_btc_val + self.btc_required_increase
-        self.transactor.place_limit_sale(new_order, sell_price=sell_price)
+    #  def _set_limit_sale(self, order):
+    #      sell_price = new_order.btc_quantity + self.btc_required_increase
+    #      self.transactor.place_limit_sale(new_order, sell_price=sell_price)
 
-    #  [wipn] this probably doesn't need to happen, if i just set market sell orders
-    #  when i buy
     def _sell_all_profitable_orders(self):
         for order in self._profitable_orders():
             self.transactor.sell(order)
 
-    #  [wipn] logical update?
-    #  this also needs to account for upward moving buys, so basically what I own sets a range
-    #  and I buy above or below in intervals..?
     def _time_to_buy(self):
-        return True # wipn remove
+        return True
         #  return self._highest_buy_at() >= self.current_price
     
     def _profitable_orders(self):
