@@ -1,43 +1,102 @@
 from cbot.client     import Client
 from cbot.model      import Order
 from cbot.transactor import Transactor
-import time
-from cbot.db import session
+from cbot.db         import session
 
 class Cbot:
-    btc_purchase_increment = 10
-    usd_buy_amount         = 5
-    btc_required_increase  = 50
+    usd_buy_amount = 100
 
     def __init__(self):
         self.uninitialized = True
         self.client        = Client()
         self.transactor    = Transactor(self.client)
+        self.runs          = 0
 
     def __call__(self, price):
-        if self.uninitialized:
-            self.uninitialized = False
-            #  self.action_ceiling = price +
-            #  self.action_floor = price -
-
-        if price is not None:
+        if price is None:
+            return
+        else
             self.price = price
+            self._run()
 
-            #  [wipn] START HERE - polish the algorythm and test sales
-            # if price is 10 greater than last, buy
-            #  if price is 10 less than last, sell all profitable
-            # profitable means selling recoups original  Plus cost of selling
+    def _run(self):
+        if self.runs == 0:
+            self._first_pass_setup()
+            self.runs == 1
+        else if self.runs == 1
+            self._second_pass_setup()
+            self.runs == 2
+        else
+            self._make_money()
 
-            #  [wipn] not tested yet
-            #  self._execute_sales()
+    def _first_pass_setup(self):
+        self.price                  = self.price
+        self.last_trasnsaction_rate = self.price
+        self.uninitialized          = False
+        self._set_ceiling()
+        self._set_floor()
 
-            #  [wipn] this works in cb and successfully writes to my db
-            #  self._execute_purchase()
+    def _second_pass_setup(self):
+        if self.price > self.last_transaction_rate
+            self.trend = 'up'
+        else self.price <= self.last_transaction_rate
+            self.trend = 'down'
 
-            #  self._update_pending_orders()
+    def _make_money(self):
+        self._run_transactions()
+        self._monitor_trend()
+        self._update_pending_orders()
+
+    def _run_transactions(self):
+        if self._time_to_buy():
+            self.transactor.market_buy(self.usd_buy_amount)
+            self._last_transaction_rate = self.price
+        else if self._time_to_sell():
+            self._execute_sales()
+            self._last_transaction_rate = self.price
+        else
+            pass
+
+    def _monitor_trend(self)
+        if self._new_down_trend():
+            self.trend = 'down'
+        else self._new_up_trend():
+            self.trend = 'up'
+
+    def _new_down_trend(self):
+        self.trend == 'up' && self._below_floor()
+
+    def _new_up_trend(self):
+        self.trend == 'down' and self._above_ceiling()
+
+    def _time_to_sell(self):
+        # reversal of upward tren
+        self.trend == 'up' and self._below_floor()
+
+    def _time_to_buy(self):
+        self._moving_steadily_up() or self._moving_steadily_down()
+
+    def _moving_steadily_up(self):
+        return self.trend == 'up' and self._above_ceiling()
+
+    def _moving_steadily_down(self):
+         return self.trend == 'below' and self._below_floor()
+
+    def _below_floor(self):
+        self.price <= self.floor
+
+    def _above_ceilng(self):
+        return self.price >= self.ceiling
+
+    def _set_ceiling(self):
+        return self.ceiling = self.price * 0.02 + self.price
+
+    def _set_floor(self):
+        self.floor = self.price - self.price * 0.04
 
     def _execute_sales(self):
-        self._sell_all_profitable_orders()
+        for order in self._profitable_orders():
+            self.transactor.sell(order)
 
     def _update_pending_orders(self):
         for order in Order.pending():
@@ -49,24 +108,5 @@ class Cbot:
     def _needs_update(self, ext_status, int_status):
         return ext_status != 'pending' and ext_status != int_status
 
-    def _execute_purchase(self):
-        if self._time_to_buy():
-            self.transactor.market_buy(self.usd_buy_amount)
-
-    #  def _set_limit_sale(self, order):
-    #      sell_price = new_order.btc_quantity + self.btc_required_increase
-    #      self.transactor.place_limit_sale(new_order, sell_price=sell_price)
-
-    def _sell_all_profitable_orders(self):
-        for order in self._profitable_orders():
-            self.transactor.sell(order)
-
-    def _time_to_buy(self):
-        return True
-        #  return self._highest_buy_at() >= self.current_price
-    
     def _profitable_orders(self):
-        return Order.profitable(current_price=self.current_price)
-
-    def _highest_buy_at(self):
-        return Order.lowest_bought_at() - self.purchase_increment
+        return Order.profitable(self.current_price)

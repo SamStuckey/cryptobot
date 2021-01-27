@@ -7,7 +7,6 @@ class Websocket(cbpro.WebsocketClient):
         self.products = ["BTC-USD"]
         self.channels = ["ticker"]
 
-    #  [wipn] how the hell do i leverage this to trigger events at the top level?
     def on_message(self, msg):
         price = msg.get('price')
         print("received price: ", price)
