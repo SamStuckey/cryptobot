@@ -13,11 +13,12 @@ class Cbot:
         self.transactor     = Transactor(self.client)
 
     def __call__(self, price):
-        if price is None:
-            return
-        else
-            self.price = price
-            self._run()
+        print(Query.available_funds())
+        #  if price is None:
+        #      return
+        #  else
+        #      self.price = price
+        #      self._run()
 
     def _run(self):
         if self.runs == 0:
