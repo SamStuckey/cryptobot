@@ -13,12 +13,11 @@ class Cbot:
         self.transactor     = Transactor(self.client)
 
     def __call__(self, price):
-        print(Query.available_funds())
-        #  if price is None:
-        #      return
-        #  else
-        #      self.price = price
-        #      self._run()
+         if price is None:
+             return
+         else
+             self.price = price
+             self._run()
 
     def _run(self):
         if self.runs == 0:
@@ -44,8 +43,8 @@ class Cbot:
             self.trend = 'down'
 
     def _make_money(self):
-        self._run_transactions()
         self._monitor_trend()
+        self._run_transactions()
         self._update_pending_orders()
 
     def _run_transactions(self):
