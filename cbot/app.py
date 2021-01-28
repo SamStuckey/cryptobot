@@ -2,22 +2,24 @@ from cbot.client     import Client
 from cbot.model      import Order
 from cbot.transactor import Transactor
 from cbot.db         import session
+from cbot.query      import Query
 
 class Cbot:
     usd_buy_amount = 10
 
     def __init__(self):
-        self.uninitialized = True
-        self.client        = Client()
-        self.transactor    = Transactor(self.client)
-        self.runs          = 0
+        self.usd_buy_amount = Query.available_funds() * 0.05
+        self.runs           = 0
+        self.uninitialized  = True
+        self.client         = Client()
+        self.transactor     = Transactor(self.client)
 
     def __call__(self, price):
-        if price is None:
-            return
-        else
-            self.price = price
-            self._run()
+         if price is None:
+             return
+         else
+             self.price = price
+             self._run()
 
     def _run(self):
         if self.runs == 0:
@@ -47,8 +49,8 @@ class Cbot:
             self.trend = 'down'
 
     def _make_money(self):
-        self._run_transactions()
         self._monitor_trend()
+        self._run_transactions()
         self._update_pending_orders()
 
     def _run_transactions(self):
@@ -82,7 +84,13 @@ class Cbot:
         self.trend == 'up' and self._below_floor()
 
     def _time_to_buy(self):
+        self._purchase_rules_apply and self._funds_available()
+
+    def _purchase_rules_apply(self)
         self._moving_steadily_up() or self._moving_steadily_down()
+
+    def _funds_available(self):
+        Query.available_funds() >= self.usd_buy_amount
 
     def _moving_steadily_up(self):
         return self.trend == 'up' and self._above_ceiling()
