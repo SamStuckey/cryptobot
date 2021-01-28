@@ -8,16 +8,18 @@ class Transactor():
 
     #  [wipn] dry run
     def dry_run_buy(self, amount):
-        result = {
-                    purchase_rate:
-                }
-        return Order.create_purchase(result)
+        pass
+        #  result = {
+        #              purchase_rate:
+        #          }
+        #  return Order.create_purchase(result)
 
     def dry_run_sale(self, amount):
-        result = {
-                    purchase_rate:
-                }
-        return Order.create_purchase(result)
+        pass
+        #  result = {
+        #              purchase_rate:
+        #          }
+        #  return Order.create_purchase(result)
 
     def market_buy(self, amount):
         result = self.client.place_market_order(amount)

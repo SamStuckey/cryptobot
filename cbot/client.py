@@ -65,3 +65,7 @@ class Client():
                             order_type='limit',
                             product_id='BTC-USD')
 
+    #  [wipn] this works, but isstn' getting me what i want
+    def default_account(self):
+        return cb_auth_cli.get_accounts()
+
