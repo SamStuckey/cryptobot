@@ -6,22 +6,27 @@ class Transactor():
     def __init__(self, client):
         self.client = client
 
+    #  [wipn] dry run
+    def dry_run_buy(self, amount):
+        result = {
+                    purchase_rate:
+                }
+        return Order.create_purchase(result)
+
+    def dry_run_sale(self, amount):
+        result = {
+                    purchase_rate:
+                }
+        return Order.create_purchase(result)
+
     def market_buy(self, amount):
         result = self.client.place_market_order(amount)
         return Order.create_purchase(result)
 
-    def buy(self, orders):
+    def market_sale(self, order):
         pass
-        #  self.client.buy({'amount' => order.btc_quantity,
-        #                  'currency' => 'BTC',
-        #                  'payment_method' => self._payment()
-
-    def sell(self, order):
-        pass
-        #  self.client.sell({'amount' => order.btc_quantity,
+        #  [wipn] don't know if 'sell' is right
+        #  response = self.client.sell({'amount' => order.btc_quantity,
         #                  'currency' => 'BTC',
         #                  'payment_method' => self._payment()})
-
-    def _payment(self):
-        pass
-        #  self.client.payment_methods.first
+        #  order.sold_at_rate = response.??

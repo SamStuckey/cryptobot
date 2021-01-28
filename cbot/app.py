@@ -4,7 +4,7 @@ from cbot.transactor import Transactor
 from cbot.db         import session
 
 class Cbot:
-    usd_buy_amount = 100
+    usd_buy_amount = 10
 
     def __init__(self):
         self.uninitialized = True
@@ -35,6 +35,10 @@ class Cbot:
         self.uninitialized          = False
         self._set_ceiling()
         self._set_floor()
+        self._set_purchase_size()
+
+    def _set_purchase_size(self):
+        
 
     def _second_pass_setup(self):
         if self.price > self.last_transaction_rate
@@ -49,7 +53,11 @@ class Cbot:
 
     def _run_transactions(self):
         if self._time_to_buy():
-            self.transactor.market_buy(self.usd_buy_amount)
+            #  [wipn] keep - working
+            #  self.transactor.market_buy(self.usd_buy_amount)
+            #  testing only
+            self.transactor.dry_run_by(self.usd_buy_amount)
+
             self._last_transaction_rate = self.price
         else if self._time_to_sell():
             self._execute_sales()
@@ -96,7 +104,10 @@ class Cbot:
 
     def _execute_sales(self):
         for order in self._profitable_orders():
-            self.transactor.sell(order)
+            #  [wipn] keep
+            #  self.transactor.market_sale(order)
+            #  [wipn] testing only
+            self.transactor.dry_run_sell(order)
 
     def _update_pending_orders(self):
         for order in Order.pending():
