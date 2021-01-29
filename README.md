@@ -15,3 +15,10 @@
 'status': 'pending',
 'settled': False
 ```
+
+# Algorythm updates
+- check for % of by vs sell
+  - assuming this implies an iminent reversal of a trend
+    - use this to inflate the buy amount
+    - how can this make selling smarter?  I don't want to dump evertime there is a shift.
+
