@@ -13,8 +13,9 @@ class Cbot:
         self.price = float(self.client.current_btc_price())
         print(self.price)
         #  result = self.client.place_market_sale(5)
-        result = self.client.get_order('b78c47c1-bbee-4013-806a-07ebfcae63f2')
-        print(result)
+        #  result = self.client.place_market_buy(5)
+        #  result = self.client.get_order(foobar)
+        #  print(result)
 
     def __call__(self, price):
          if price is None:
