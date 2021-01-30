@@ -1,5 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from decouple import config
 
 engine = create_engine(config('LOCAL_DB_PATH'))
 Session = sessionmaker(bind=engine)

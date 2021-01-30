@@ -48,5 +48,5 @@ class Client():
             return 0
 
     def current_btc_price(self):
-        return cb_pub_client.ticker('BTC-USD').get('price')
+        return cb_pub_cli.get_product_ticker('BTC-USD').get('price')
 

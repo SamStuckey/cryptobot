@@ -1,5 +1,5 @@
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy                 import Column, Integer, MetaData, String, func
+from sqlalchemy                 import Column, Integer, MetaData, String, func, Float
 from cbot.db                    import CRUD
 from sqlalchemy.orm.attributes  import flag_modified
 
@@ -9,25 +9,25 @@ class Order(Base, CRUD):
     __tablename__ = 'orders'
 
     # cql reset: 
-    CREATE TABLE orders (
-        purchase_rate Integer,
-        btc_quantity Integer,
-        minium_profitable_rate Integer,
-        sold_at_rate Integer,
-        usd_value_at_purchase Integer,
-        usd_value_at_sale Integer,
-        external_id String,
-        status String,
-        settled String,
-    );
+    #  CREATE TABLE orders (
+    #      purchase_rate FLOAT,
+    #      btc_quantity FLOAT,
+    #      minium_profitable_rate FLOAT,
+    #      sold_at_rate FLOAT,
+    #      usd_value_at_purchase FLOAT,
+    #      usd_value_at_sale FLOAT,
+    #      external_id VARCHAR,
+    #      status VARCHAR,
+    #      settled VARCHAR
+    #  );
 
     id                      = Column(Integer, primary_key=True)
-    purchase_rate           = Column('purchase_rate', Integer)
-    btc_quantity            = Column('btc_quantity', Integer)
-    sold_at_rate            = Column('sold_at_rate', Integer)
-    minium_profitable_rate  = Column('minium_profitable_rate', Integer)
-    usd_value_at_purchase   = Column('usd_value_at_sale', Integer)
-    usd_value_at_sale       = Column('usd_value_at_sale', Integer)
+    purchase_rate           = Column('purchase_rate', Float)
+    btc_quantity            = Column('btc_quantity', Float)
+    sold_at_rate            = Column('sold_at_rate', Float)
+    minium_profitable_rate  = Column('minium_profitable_rate', Float)
+    usd_value_at_purchase   = Column('usd_value_at_purchase', Float)
+    usd_value_at_sale       = Column('usd_value_at_sale', Float)
     external_id             = Column('external_id', String)
     status                  = Column('status', String)
     settled                 = Column('settled', String)
@@ -64,22 +64,23 @@ class Order(Base, CRUD):
 
     @classmethod
     def create_purchase(self, record, current_price):
-        order = Order(
-                external_id=record.get('id'),
-                purchase_rate=float(current_price),
-                usd_value_at_purchase=float(record.get('funds')),
-                btc_quantity=float(record.get('funds')),,
-                sold_at_rate=float(record.get('funds')),,
-                minium_profitable_rate=float(record.get('funds')),
-                usd_value_at_purchase=float(record.get('funds')),
-                usd_value_at_sale=float(record.get('funds')),
-                settled=record.get('funds')),
-                status=record.get('funds')),
-                product_id=record.get('product_id')
-            )
-        session.add(order)
-        session.commit()
-        return order
+        pass
+        #  order = Order(
+        #          external_id=record.get('id'),
+        #          purchase_rate=float(current_price),
+        #          usd_value_at_purchase=float(record.get('funds')),
+        #          btc_quantity=float(record.get('funds')),
+        #          sold_at_rate=float(record.get('funds')),
+        #          minium_profitable_rate=float(record.get('funds')),
+        #          usd_value_at_purchase=float(record.get('funds')),
+        #          usd_value_at_sale=float(record.get('funds')),
+        #          settled=record.get('funds')),
+        #          status=record.get('funds')),
+        #          product_id=record.get('product_id')
+        #      )
+        #  session.add(order)
+        #  session.commit()
+        #  return order
 
     @classmethod
     def execute_purchase(self, record):

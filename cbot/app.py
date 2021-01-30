@@ -9,6 +9,11 @@ class Cbot:
         self.client = Client()
         self._set_purchase_size()
 
+    def test_run(self):
+        self.price = float(self.client.current_btc_price())
+        print(self.price)
+        #  self.client.place_market_buy(self.purchase_size)
+
     def __call__(self, price):
          if price is None:
              return
@@ -51,8 +56,10 @@ class Cbot:
         return self.client.usd_balance >= self.purchase_size * 200
 
     def _first_pass_setup(self):
-        self.price                  = self.price
         self.last_transaction_rate = self.price
+        self._update_limits()
+
+    def _update_limits(self):
         self._set_ceiling()
         self._set_floor()
 
@@ -74,9 +81,11 @@ class Cbot:
         if self._time_to_buy():
             self.client.place_market_buy(self.purchase_size)
             self._last_transaction_rate = self.price
+            self._update_limits()
         elif self._time_to_sell():
             self._execute_sales()
             self._last_transaction_rate = self.price
+            self._update_limits()
         else:
             pass
 
@@ -93,7 +102,6 @@ class Cbot:
         return self.trend == 'down' and self._above_ceiling()
 
     def _time_to_sell(self):
-        # reversal of upward tren
         return self.trend == 'up' and self._below_floor()
 
     def _time_to_buy(self):
@@ -116,6 +124,15 @@ class Cbot:
 
     def _above_ceilng(self):
         return self.price >= self.ceiling
+
+    def _needs_update(self, ext_status, int_status):
+        return ext_status != 'pending' and ext_status != int_status
+
+    def _profitable_orders(self):
+        return Order.profitable(self.current_price)
+
+    def _calculate_increment(self):
+        return self.client.usd_balance() * float(0.05)
 
     def _set_ceiling(self):
         self.ceiling = self.price * 0.02 + self.price
@@ -140,12 +157,3 @@ class Cbot:
 
             if self._needs_update(cb_record.get('status'), order.status):
                 order.execute_purchase(cb_record)
-
-    def _needs_update(self, ext_status, int_status):
-        return ext_status != 'pending' and ext_status != int_status
-
-    def _profitable_orders(self):
-        return Order.profitable(self.current_price)
-
-    def _calculate_increment(self):
-        return self.client.usd_balance() * float(0.05)
