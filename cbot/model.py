@@ -73,7 +73,6 @@ class Order(Base, CRUD):
         #          sold_at_rate=float(record.get('funds')),
         #          minium_profitable_rate=float(record.get('funds')),
         #          usd_value_at_purchase=float(record.get('funds')),
-        #          usd_value_at_sale=float(record.get('funds')),
         #          settled=record.get('funds')),
         #          status=record.get('funds')),
         #          product_id=record.get('product_id')
@@ -83,8 +82,8 @@ class Order(Base, CRUD):
         #  return order
 
     @classmethod
-    def execute_purchase(self, record):
-        self.purchase_rate=float(record.get('executed_value'))
+    def execute_purchase(self, record,):
+        self.usd_value_at_purchase=float(record.get('executed_value'))
         self.btc_quantity=float(record.get('filled_size'))
         self.status=record.get('status')
         self._set_mpr()
