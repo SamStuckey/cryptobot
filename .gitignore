@@ -1,2 +1,7 @@
 .env
 .cred
+*.pyc
+*.pyo
+build/
+dist/
+cbot/__pycache__/
