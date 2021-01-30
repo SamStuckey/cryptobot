@@ -46,6 +46,7 @@ class Cbot:
             print('BTC balance: '    + str(self.btc_balance))
             print('USD balance: '    + str(self.usd_balance))
             print('BTC price: '      + str(self.price))
+            print('Trend: '          + self.trend)
             print('cash out value: ' + str(self._cash_out_value()))
 
     def _cash_out_value(self):
