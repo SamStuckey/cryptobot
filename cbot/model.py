@@ -8,11 +8,26 @@ Base = declarative_base()
 class Order(Base, CRUD):
     __tablename__ = 'orders'
 
+    # cql reset: 
+    CREATE TABLE orders (
+        purchase_rate Integer,
+        btc_quantity Integer,
+        minium_profitable_rate Integer,
+        sold_at_rate Integer,
+        usd_value_at_purchase Integer,
+        usd_value_at_sale Integer,
+        external_id String,
+        status String,
+        settled String,
+    );
+
     id                      = Column(Integer, primary_key=True)
     purchase_rate           = Column('purchase_rate', Integer)
     btc_quantity            = Column('btc_quantity', Integer)
     sold_at_rate            = Column('sold_at_rate', Integer)
     minium_profitable_rate  = Column('minium_profitable_rate', Integer)
+    usd_value_at_purchase   = Column('usd_value_at_sale', Integer)
+    usd_value_at_sale       = Column('usd_value_at_sale', Integer)
     external_id             = Column('external_id', String)
     status                  = Column('status', String)
     settled                 = Column('settled', String)
@@ -23,11 +38,14 @@ class Order(Base, CRUD):
                 btc_quantity='%s',
                 sold_at_rate='%s',
                 minium_profitable_rate='%s',
+                usd_value_at_purchase='%s',
+                usd_value_at_sale='%s',
                 external_id='%s',
                 settled='%s',
                 status='%s')>
         ''' % (self.purchase_rate, self.btc_quantity,
                self.sold_at_rate, self.minium_profitable_rate,
+               self.usd_value_at_purchase, self.usd_value_at_sale,
                self.external_id, self.settled, self.status) 
 
     @classmethod
@@ -45,14 +63,19 @@ class Order(Base, CRUD):
         return self.query(self).all()
 
     @classmethod
-    def create_purchase(self, record):
+    def create_purchase(self, record, current_price):
         order = Order(
                 external_id=record.get('id'),
-                purchase_value=float(record.get('funds')),
-                purchase_rate=record.get('executed_value'),
-                btc_quantity=float(record.get('filled_size')),
-                settled=record.get('settled'),
-                status=record.get('status'),
+                purchase_rate=float(current_price),
+                usd_value_at_purchase=float(record.get('funds')),
+                btc_quantity=float(record.get('funds')),,
+                sold_at_rate=float(record.get('funds')),,
+                minium_profitable_rate=float(record.get('funds')),
+                usd_value_at_purchase=float(record.get('funds')),
+                usd_value_at_sale=float(record.get('funds')),
+                settled=record.get('funds')),
+                status=record.get('funds')),
+                product_id=record.get('product_id')
             )
         session.add(order)
         session.commit()

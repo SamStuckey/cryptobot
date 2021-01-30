@@ -21,8 +21,8 @@ class Cbot:
             self._first_pass_setup()
         elif self.runs == 1:
             self._second_pass_setup()
-        #  else:
-        #      self._make_money()
+        else:
+            self._make_money()
         self.runs += 1
         self._report()
 
@@ -67,7 +67,7 @@ class Cbot:
 
     def _make_money(self):
         self._monitor_trend()
-        self._run_transactions()
+        #  self._run_transactions()
         self._update_pending_orders()
 
     def _run_transactions(self):

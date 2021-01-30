@@ -19,9 +19,9 @@
 
 ## example of coinbase get order response 
 ```
-'id': '33f739ab-7908-4639-b972-3d662c7153ae',
+'id': '3333333333333333333333333333333333333333333333333333333',
 'product_id': 'BTC-USD',
-'profile_id': '060c2162-a79f-4708-b504-01fbf80b716b',
+'profile_id': '33333333333333333333333333333333333333333',
 'side': 'buy',
 'funds': '9.9502487500000000',
 'specified_funds': '10.0000000000000000',
@@ -40,7 +40,7 @@
 
 ## example of coinbase purchase response 
 ```
-'id': 'cc4820dk-fobar-28c5asack2373',
+'id': 'v333333333333333333333333333333333333333333333333333333333333',
 'product_id': 'BTC-USD',
 'side': 'buy',
 'stp': 'dc',
