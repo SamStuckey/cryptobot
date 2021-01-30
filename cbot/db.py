@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-engine = create_engine('postgresql://samuelstuckey:pass@localhost:5432/cryptobot')
+engine = create_engine(config('LOCAL_DB_PATH'))
 Session = sessionmaker(bind=engine)
 session = Session()
 
