@@ -3,6 +3,18 @@
     when i sell, i'm not selling specific orders, rather the sum of their values.
     I need to figure out the best way to mark them pending and then track their
     final sale price after execution.
+- update trend reversal logic to use velocity or buy / sell ratio
+    I can make this way smarter by watching for shifts in market trends
+    instead of hard numbers.  I think this will work best for buying, as it
+    can indicate the approach of a floor.  
+
+    However, it's a little fuzzier on sales, as we want to avoid false positives.
+    Maybe set up a more refined sale trigger that watches for both percentange
+    changes and downticks, in conjunction with a hard stop loss below peaks.
+- balance not found problem
+    right now, my client is just returning 0 instead of None, but wtf...
+    why is my balance not always found?  what are the potential implications of 
+    this?
 
 
 ## example of coinbase get order response 

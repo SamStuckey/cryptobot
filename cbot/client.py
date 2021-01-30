@@ -34,11 +34,19 @@ class Client():
 
 
     def usd_balance(self):
-        return float(cb_auth_cli.get_account(cb_usd_acc_num)['balance'])
+        result = cb_auth_cli.get_account(cb_usd_acc_num).get('balance')
+        if result != None:
+            return float(result)
+        else:
+            return 0
 
     def btc_balance(self):
-        return float(cb_auth_cli.get_account(cb_btc_acc_num)['balance'])
+        result = cb_auth_cli.get_account(cb_btc_acc_num).get('balance')
+        if result != None:
+            return float(result)
+        else:
+            return 0
 
     def current_btc_price(self):
-        return cb_pub_client.ticker('BTC-USD')['price']
+        return cb_pub_client.ticker('BTC-USD').get('price')
 

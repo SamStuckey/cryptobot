@@ -3,34 +3,45 @@ from cbot.model      import Order
 from cbot.db         import session
 
 class Cbot:
+    runs = 0
+
     def __init__(self):
-        self.client         = Client()
+        self.client = Client()
         self._set_purchase_size()
-        self.runs           = 0
-        print(self.purchase_size)
-        result = self.client.place_market_sale(str(self.purchase_size))
-        print(result)
 
     def __call__(self, price):
-        pass
-         #  if price is None:
-         #      return
-         #  else
-         #      self.price = price
-         #      self._run()
+         if price is None:
+             return
+         else:
+             self.price = float(price)
+             self._run()
 
     def _run(self):
         if self.runs == 0:
             self._first_pass_setup()
         elif self.runs == 1:
             self._second_pass_setup()
-        else:
-            self._make_money()
-        self.runs = self.runs + 1
-        print(self.runs)
-        if runs == 1000:
+        #  else:
+        #      self._make_money()
+        self.runs += 1
+        self._report()
+
+        if self.runs == 1000:
             self.adjust_purchase_size()
-            self.runs = 3
+            self.runs = 2
+
+    def _report(self):
+        if self.runs % 10 == 0:
+            self.btc_balance = self.client.btc_balance()
+            self.usd_balance = self.client.usd_balance()
+            print('runs: '           + str(self.runs))
+            print('BTC balance: '    + str(self.btc_balance))
+            print('USD balance: '    + str(self.usd_balance))
+            print('BTC price: '      + str(self.price))
+            print('cash out value: ' + str(self._cash_out_value()))
+
+    def _cash_out_value(self):
+        return self.btc_balance * self.price + self.usd_balance
 
     def adjust_purchase_size(self):
         if self._double_profit():
@@ -41,7 +52,7 @@ class Cbot:
 
     def _first_pass_setup(self):
         self.price                  = self.price
-        self.last_trasnsaction_rate = self.price
+        self.last_transaction_rate = self.price
         self._set_ceiling()
         self._set_floor()
 
