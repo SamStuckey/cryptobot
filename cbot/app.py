@@ -1,20 +1,15 @@
 from cbot.client     import Client
 from cbot.model      import Order
-from cbot.transactor import Transactor
 from cbot.db         import session
-from cbot.query      import Query
+from decimal         import Decimal
 
 class Cbot:
-    usd_buy_amount = 10
-
     def __init__(self):
         self.client         = Client()
-        print(self.client.default_account())
-        #  self.usd_buy_amount = Query.available_funds() * 0.05
-        #  self.runs           = 0
-        #  self.uninitialized  = True
-        #  self.client         = Client()
-        #  self.transactor     = Transactor(self.client)
+        self._set_purchase_size()
+        self.runs           = 0
+        #  print(self.purchase_size)
+        self.client.place_market_buy(self.purchase_size)
 
     def __call__(self, price):
         pass
@@ -42,18 +37,16 @@ class Cbot:
             self._set_purchase_size()
 
     def _double_profit(self):
-        return Query.available_funds() >= self.purchase_size * 200
+        return self.client.usd_balance >= self.purchase_size * 200
 
     def _first_pass_setup(self):
         self.price                  = self.price
         self.last_trasnsaction_rate = self.price
-        self.uninitialized          = False
         self._set_ceiling()
         self._set_floor()
-        self._set_purchase_size()
 
     def _set_purchase_size(self):
-        self.purchase_size = Decimal(Query.available_funds()) * 0.01
+        self.purchase_size = self._calculate_increment()
 
     def _second_pass_setup(self):
         if self.price > self.last_transaction_rate:
@@ -68,11 +61,7 @@ class Cbot:
 
     def _run_transactions(self):
         if self._time_to_buy():
-            #  [wipn] keep - working
-            #  self.transactor.market_buy(self.usd_buy_amount)
-            #  testing only
-            self.transactor.dry_run_by(self.usd_buy_amount)
-
+            self.client.place_market_buy(self.purchase_size)
             self._last_transaction_rate = self.price
         elif self._time_to_sell():
             self._execute_sales()
@@ -97,13 +86,13 @@ class Cbot:
         return self.trend == 'up' and self._below_floor()
 
     def _time_to_buy(self):
-        return self._purchase_rules_apply and self._funds_available()
+        return self._purchase_rules_apply() and self._funds_available()
 
     def _purchase_rules_apply(self):
         return self._moving_steadily_up() or self._moving_steadily_down()
 
     def _funds_available(self):
-        return Query.available_funds() >= self.usd_buy_amount
+        return self.client.usd_balance() >= self.purchase_size
 
     def _moving_steadily_up(self):
         return self.trend == 'up' and self._above_ceiling()
@@ -124,11 +113,12 @@ class Cbot:
         self.floor = self.price - self.price * 0.04
 
     def _execute_sales(self):
+        total_to_sell = 0
         for order in self._profitable_orders():
-            #  [wipn] keep
-            #  self.transactor.market_sale(order)
-            #  [wipn] testing only
-            self.transactor.dry_run_sell(order)
+            total_to_sell = total_to_sell + Decimal(order['btc_quantity'])
+
+        if total_to_sell > 0
+            self.client.place_market_sale(total_to_sell)
 
     def _update_pending_orders(self):
         for order in Order.pending():
@@ -142,3 +132,6 @@ class Cbot:
 
     def _profitable_orders(self):
         return Order.profitable(self.current_price)
+
+    def _calculate_increment(self):
+        return self.client.usd_balance() * Decimal(0.05)

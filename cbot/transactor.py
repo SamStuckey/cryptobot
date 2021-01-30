@@ -22,8 +22,10 @@ class Transactor():
         #  return Order.create_purchase(result)
 
     def market_buy(self, amount):
+        print(amount)
         result = self.client.place_market_order(amount)
-        return Order.create_purchase(result)
+        print(result)
+        #  return Order.create_purchase(result)
 
     def market_sale(self, order):
         pass
