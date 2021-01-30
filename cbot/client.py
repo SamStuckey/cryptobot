@@ -1,6 +1,5 @@
 import cbpro
 from decouple import config
-from decimal         import Decimal
 
 coinbase_key        = config('CB_API_PKEY')
 coinbase_secret     = config('CB_API_SKEY')
@@ -15,13 +14,11 @@ cb_auth_cli = cbpro.AuthenticatedClient(coinbase_key,
 
 class Client():
     def place_market_buy(self, amount):
-        print(amount)
-        print(cb_auth_cli)
         return cb_auth_cli.place_market_order(product_id='BTC-USD',
                                                 side='buy',
                                                 funds=amount)
 
-    def place_market_sale(self, order):
+    def place_market_sale(self, amount):
         return cb_auth_cli.place_market_order(product_id='BTC-USD',
                                                 side='sell',
                                                 funds=amount)
@@ -37,10 +34,10 @@ class Client():
 
 
     def usd_balance(self):
-        return Decimal(cb_auth_cli.get_account(cb_usd_acc_num)['balance'])
+        return float(cb_auth_cli.get_account(cb_usd_acc_num)['balance'])
 
     def btc_balance(self):
-        return Decimal(cb_auth_cli.get_account(cb_btc_acc_num)['balance'])
+        return float(cb_auth_cli.get_account(cb_btc_acc_num)['balance'])
 
     def current_btc_price(self):
         return cb_pub_client.ticker('BTC-USD')['price']

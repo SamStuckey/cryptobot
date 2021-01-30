@@ -1,3 +1,10 @@
+## TODO:
+- pending sale problem
+    when i sell, i'm not selling specific orders, rather the sum of their values.
+    I need to figure out the best way to mark them pending and then track their
+    final sale price after execution.
+
+
 ## example of coinbase get order response 
 ```
 'id': '33f739ab-7908-4639-b972-3d662c7153ae',

@@ -1,15 +1,15 @@
 from cbot.client     import Client
 from cbot.model      import Order
 from cbot.db         import session
-from decimal         import Decimal
 
 class Cbot:
     def __init__(self):
         self.client         = Client()
         self._set_purchase_size()
         self.runs           = 0
-        #  print(self.purchase_size)
-        self.client.place_market_buy(self.purchase_size)
+        print(self.purchase_size)
+        result = self.client.place_market_sale(str(self.purchase_size))
+        print(result)
 
     def __call__(self, price):
         pass
@@ -46,7 +46,7 @@ class Cbot:
         self._set_floor()
 
     def _set_purchase_size(self):
-        self.purchase_size = self._calculate_increment()
+        self.purchase_size = round(self._calculate_increment(), 2)
 
     def _second_pass_setup(self):
         if self.price > self.last_transaction_rate:
@@ -115,11 +115,14 @@ class Cbot:
     def _execute_sales(self):
         total_to_sell = 0
         for order in self._profitable_orders():
-            total_to_sell = total_to_sell + Decimal(order['btc_quantity'])
+            total_to_sell = total_to_sell + float(order['btc_quantity'])
+            #  [wipn] implement this
+            order.mark_sale_pending()
 
-        if total_to_sell > 0
+        if total_to_sell > 0:
             self.client.place_market_sale(total_to_sell)
 
+    #  [wipn] will this work for pending sales as well?
     def _update_pending_orders(self):
         for order in Order.pending():
             cb_record = self.client.get_order(order.external_id)
@@ -134,4 +137,4 @@ class Cbot:
         return Order.profitable(self.current_price)
 
     def _calculate_increment(self):
-        return self.client.usd_balance() * Decimal(0.05)
+        return self.client.usd_balance() * float(0.05)

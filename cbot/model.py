@@ -1,14 +1,11 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy                 import Column, Integer, MetaData, String, func
 from cbot.db                    import CRUD
-from decimal                    import Decimal, getcontext
 from sqlalchemy.orm.attributes  import flag_modified
 
 Base = declarative_base()
 
 class Order(Base, CRUD):
-    getcontext().prec = 9
-
     __tablename__ = 'orders'
 
     id                      = Column(Integer, primary_key=True)
@@ -37,7 +34,7 @@ class Order(Base, CRUD):
     def profitable(self, current_price):
         return self.query(self).filter(
                 #  [wipn] make sure this won't break because of orders that don't have a mpr yet
-                self.minium_profitable_rate <= Decimal(current_price)).all()
+                self.minium_profitable_rate <= float(current_price)).all()
 
     @classmethod
     def pending(self):
@@ -51,9 +48,9 @@ class Order(Base, CRUD):
     def create_purchase(self, record):
         order = Order(
                 external_id=record.get('id'),
-                purchase_value=Decimal(record.get('funds')),
+                purchase_value=float(record.get('funds')),
                 purchase_rate=record.get('executed_value'),
-                btc_quantity=Decimal(record.get('filled_size')),
+                btc_quantity=float(record.get('filled_size')),
                 settled=record.get('settled'),
                 status=record.get('status'),
             )
@@ -63,8 +60,8 @@ class Order(Base, CRUD):
 
     @classmethod
     def execute_purchase(self, record):
-        self.purchase_rate=Decimal(record.get('executed_value'))
-        self.btc_quantity=Decimal(record.get('filled_size'))
+        self.purchase_rate=float(record.get('executed_value'))
+        self.btc_quantity=float(record.get('filled_size'))
         self.status=record.get('status')
         self._set_mpr()
         self.save()
