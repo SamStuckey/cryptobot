@@ -2,6 +2,7 @@
 .cred
 *.pyc
 *.pyo
+*.swp
 build/
 dist/
 cbot/__pycache__/
