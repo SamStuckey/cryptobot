@@ -3,7 +3,6 @@ from cbot.model      import Order
 from cbot.db         import session
 
 class Cbot:
-    runs = 0
     trend = 'down' # assume on start so we don't buy right away
 
     def __init__(self):
@@ -24,7 +23,8 @@ class Cbot:
         #  print(buy_result)
         #  print(order_query_result)
 
-    def __call__(self, price):
+    def __call__(self, price, runs):
+        self.runs = runs
         if price is None:
             return 0
         else:
@@ -34,14 +34,13 @@ class Cbot:
     def _run(self):
         self._make_money()
         self._report()
-        return self._handle_run_count()
+        self._handle_run_count()
 
     def _handle_run_count(self):
         self.runs += 1
         if self.runs == 1000:
             self.adjust_purchase_size()
             self.runs = 2
-        return self.runs
 
     def _report(self):
         if self.runs % 10 == 0:

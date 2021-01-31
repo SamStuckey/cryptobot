@@ -15,9 +15,9 @@ class Websocket(cbpro.WebsocketClient):
         if self.app_runs > 2000000000:
             print('reseting after 2000000000th run')
             self.cbot = Cbot()
-            self.app_runs = int(0)
+            self.app_runs = 0
         else:
-            print('run #: ' + str(self.app_runs))
-            self.app_runs = self.cbot(msg.get('price'))
+            print(self.app_runs)
+            self.cbot(msg.get('price'), self.app_runs)
             self.app_runs += 1
 
