@@ -9,7 +9,8 @@ class Order(Base, CRUD):
     __tablename__ = 'orders'
 
     # cql reset: 
-    #  CREATE TABLE orders (
+#      CREATE TABLE orders (
+    #      id int PRIMARY KEY NOT NULL,
     #      purchase_rate FLOAT,
     #      btc_quantity FLOAT,
     #      minium_profitable_rate FLOAT,
@@ -20,7 +21,7 @@ class Order(Base, CRUD):
     #      status VARCHAR,
     #      settled VARCHAR
     #  );
-
+#
     id                      = Column(Integer, primary_key=True)
     purchase_rate           = Column('purchase_rate', Float)
     btc_quantity            = Column('btc_quantity', Float)
