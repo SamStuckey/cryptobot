@@ -167,6 +167,39 @@ class Cbot:
         self.runs_in_valley = 0
 
     #  [wipn] START HERE - getting false positives for time to sell... figure out why
+    # EG
+    #  --------------------------------------
+    #  --------------------------------------
+    #  runs: 4740
+    #  BTC balance: 0.0
+    #  USD balance: 0
+    #  BTC price: 33450.0
+    #  ceiling: 33943.8939
+    #  floor: 32940.6261
+    #  ceiling diff: -493.89390000000276
+    #  floor diff: 509.3738999999987
+    #  Trend: u
+    #  cash out value: 0.0
+    #  stabalized: peak
+    #  purchase size: 35
+    #  --------------------------------------
+    #  holding peak: 0
+    #  time to sell
+    #  --------------------------------------
+    #  runs: 4750
+    #  BTC balance: 0.0
+    #  USD balance: 0
+    #  BTC price: 33457.34
+    #  ceiling: 33943.8939
+    #  floor: 32940.6261
+    #  ceiling diff: -486.55390000000625
+    #  floor diff: 516.7138999999952
+    #  Trend: u
+    #  cash out value: 0.0
+    #  stabalized: False
+    #  purchase size: 35
+    #  --------------------------------------
+    #  --------------------------------------
     def _time_to_sell(self):
         return self._new_peak() or self._new_down_trend()
 
