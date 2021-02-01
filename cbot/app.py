@@ -19,9 +19,9 @@ class Cbot:
         self._set_floor()
 
     def test_run(self):
-        self._update_pending_orders()
-        self._execute_sales()
-        #  pass
+        pass
+        #  self._update_pending_orders()
+        #  self._execute_sales()
         #  self._sell_all_btc()
         #  self.price = float(self.client.current_btc_price())
         #  print(self._place_order(self.min_price))
@@ -47,7 +47,7 @@ class Cbot:
     def _handle_run_count(self):
         self.runs += 1
         if self.runs % 100 == 0:
-            self.adjust_purchase_size()
+            self._adjust_purchase_size()
             self.runs = 2
 
     def _report(self):
@@ -100,7 +100,7 @@ class Cbot:
     def _cash_out_value(self):
         return self.btc_balance * self.price + self.usd_balance
 
-    def adjust_purchase_size(self):
+    def _adjust_purchase_size(self):
         self._set_purchase_size()
         print('purchase size set to: ' + str(self.purchase_size))
 
@@ -133,36 +133,35 @@ class Cbot:
         result = self.client.place_market_buy(amount)
         return Order.create(result)
 
-    def _run_sales(self):
-        self._execute_sales()
-        self.last_transaction_rate = self.price
-        self._reset_runs_since_last()
-
     def _run_transactions(self):
         if self._time_to_buy():
-            print('time to buy ~~~~~~~~~~~')
-            print('    new valley: ' + str(self._new_valley()))
-            print('        trend: ' + self.trend)
-            print('        runs_in_valley: ' + str(self.runs_in_valley))
-            print('    moving_steadily_up: ' + str(self._moving_steadily_up()))
-            print('        above_ceiling: : ' + str(self._above_ceiling()))
-            print('    new_up_trend: ' + str(self._new_up_trend()))
-            print('        new_trend: ' + str(self.new_trend))
-            print('+++++++++++++++++ TIME TO BUY ++++++++++++++++++')
-            self._report()
+            self._buy_report()
             self._run_buys()
         elif self._time_to_sell():
-            print('time to sell ~~~~~~~~~~~')
-            print('    _new_peak: ' + str(self._new_peak()))
-            print('        trend: ' + self.trend) 
-            print('        runs_at_peak: ' + str(self.runs_at_peak)) 
-            print('    _new_down_trend: ' + str(self._new_down_trend()))
-            print('        new_trend: ' + str(self.new_trend))
-            print('+++++++++++++++++ TIME TO SELL ++++++++++++++++++')
-            self._report()
+            self._sell_report()
             self._run_sales()
         else:
             self.runs_since_last_transaction += 1
+
+    def _buy_report(self):
+        print('+++++++++++++++++ TIME TO BUY ++++++++++++++++++')
+        print('    new valley: '          + str(self._new_valley()))
+        print('        trend: '           + self.trend)
+        print('        runs_in_valley: '  + str(self.runs_in_valley))
+        print('    moving_steadily_up: '  + str(self._moving_steadily_up()))
+        print('        above_ceiling: : ' + str(self._above_ceiling()))
+        print('    new_up_trend: '        + str(self._new_up_trend()))
+        print('        new_trend: '       + str(self.new_trend))
+        self._report()
+
+    def _sell_report(self):
+        print('+++++++++++++++++ TIME TO SELL ++++++++++++++++++')
+        print('    _new_peak: '        + str(self._new_peak()))
+        print('        trend: '        + self.trend)
+        print('        runs_at_peak: ' + str(self.runs_at_peak))
+        print('    _new_down_trend: '  + str(self._new_down_trend()))
+        print('        new_trend: '    + str(self.new_trend))
+        self._report()
 
     def _monitor_trend(self):
         if self._down_turn():
@@ -190,40 +189,6 @@ class Cbot:
         self.runs_at_peak = 0
         self.runs_in_valley = 0
 
-    #  [wipn] START HERE - getting false positives for time to sell... figure out why
-    # EG
-    #  --------------------------------------
-    #  --------------------------------------
-    #  runs: 4740
-    #  BTC balance: 0.0
-    #  USD balance: 0
-    #  BTC price: 33450.0
-    #  ceiling: 33943.8939
-    #  floor: 32940.6261
-    #  ceiling diff: -493.89390000000276
-    #  floor diff: 509.3738999999987
-    #  Trend: u
-    #  cash out value: 0.0
-    #  stabalized: peak
-    #  purchase size: 35
-    #  --------------------------------------
-    #  holding peak: 0
-    #  time to sell
-    #  --------------------------------------
-    #  runs: 4750
-    #  BTC balance: 0.0
-    #  USD balance: 0
-    #  BTC price: 33457.34
-    #  ceiling: 33943.8939
-    #  floor: 32940.6261
-    #  ceiling diff: -486.55390000000625
-    #  floor diff: 516.7138999999952
-    #  Trend: u
-    #  cash out value: 0.0
-    #  stabalized: False
-    #  purchase size: 35
-    #  --------------------------------------
-    #  --------------------------------------
     def _time_to_sell(self):
         return self._new_peak() or self._new_down_trend()
 
@@ -287,6 +252,11 @@ class Cbot:
             cb_record = self.client.get_order(order.external_id)
             if self._needs_update(cb_record.get('status'), order.status):
                 order.execute(cb_record)
+
+    def _run_sales(self):
+        self._execute_sales()
+        self.last_transaction_rate = self.price
+        self._reset_runs_since_last()
 
     def _execute_sales(self):
         total_to_sell = 0.0
