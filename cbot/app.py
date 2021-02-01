@@ -18,16 +18,20 @@ class Cbot:
         self._set_ceiling()
         self._set_floor()
 
+    # test only logic
     def test_run(self):
-        pass
+        self._sell_all_btc()
         #  self._update_pending_orders()
         #  self._execute_sales()
-        #  self._sell_all_btc()
         #  self.price = float(self.client.current_btc_price())
         #  print(self._place_order(self.min_price))
         #  self._update_pending_orders()
         #  self._execute_sales()
         #  self._update_pending_orders()
+    def _sell_all_btc(self):
+        amt = self.client.btc_balance()
+        self.client.place_market_sale(amt)
+    # test only logic
 
     def __call__(self, price, runs):
         self.runs = runs
@@ -131,6 +135,8 @@ class Cbot:
 
     def _place_order(self, amount):
         result = self.client.place_market_buy(amount)
+        print('market buy result')
+        print(result)
         return Order.create(result)
 
     def _run_transactions(self):
@@ -164,6 +170,10 @@ class Cbot:
         self._report()
 
     def _monitor_trend(self):
+        self._check_for_turns()
+        self._check_for_extremes()
+
+    def _check_for_turns(self):
         if self._down_turn():
             print('down turn')
             self.trend = 'd'
@@ -178,6 +188,7 @@ class Cbot:
             self.new_trend = False
             self.runs_in_price_box += 1
 
+    def _check_for_extremes(self):
         if self._holding_in_valley():
             self.runs_in_valley += 1
         elif self._holding_at_peak():
@@ -259,18 +270,23 @@ class Cbot:
         self._reset_runs_since_last()
 
     def _execute_sales(self):
+        print(' attempting sales ')
         total_to_sell = 0.0
         for order in Order.profitable(self.price):
+            print('-------profitable order: ')
+            print(order)
             total_to_sell += (order.filled_size or 0)
+            print('total to sell so far: ' + str(total_to_sell))
 
         if total_to_sell > 0:
             print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
             print('attempting to sell: ' + str(total_to_sell))
             print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
             rounded_total = round(total_to_sell, 8)
+            print('----------rouned total: ' + str(rounded_total))
             result = self.client.place_market_sale(rounded_total)
-            Order.create(result)
-
-    def _sell_all_btc(self):
-        amt = self.client.btc_balance()
-        self.client.place_market_sale(amt)
+            print('----------result of market sale: ')
+            print(result)
+            new_order = Order.create(result)
+            print('new order: ')
+            print(new_order)

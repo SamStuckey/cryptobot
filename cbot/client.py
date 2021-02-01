@@ -34,16 +34,22 @@ class Client():
 
 
     def usd_balance(self):
-        result = cb_auth_cli.get_account(cb_usd_acc_num).get('balance')
-        if result != None:
-            return float(result)
+        result = cb_auth_cli.get_account(cb_usd_acc_num)
+        balance = result.get('balance')
+        print('usd balance result')
+        print(result)
+        if balance != None:
+            return float(balance)
         else:
             return 0
 
     def btc_balance(self):
-        result = cb_auth_cli.get_account(cb_btc_acc_num).get('balance')
-        if result != None:
-            return float(result)
+        result = cb_auth_cli.get_account(cb_btc_acc_num)
+        balance = result.get('balance')
+        print('btc balance result')
+        print(result)
+        if balance != None:
+            return float(balance)
         else:
             return 0
 

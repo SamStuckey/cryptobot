@@ -1,5 +1,9 @@
 # WIPN TESt
 ## TODO:
+- throttle request per second
+    checking balances every time is kickcing me over the 5 request per second 
+    threshold, which is when i start getting  back empty responses
+      - refactor balance check out of main app
 - update trend reversal logic to use velocity or buy / sell ratio
     I can make this way smarter by watching for shifts in market trends
     instead of hard numbers.  I think this will work best for buying, as it
