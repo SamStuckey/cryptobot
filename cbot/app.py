@@ -46,7 +46,7 @@ class Cbot:
 
     def _handle_run_count(self):
         self.runs += 1
-        if self.runs == 10:
+        if self.runs % 100 == 0:
             self.adjust_purchase_size()
             self.runs = 2
 
@@ -102,6 +102,7 @@ class Cbot:
 
     def adjust_purchase_size(self):
         self._set_purchase_size()
+        print('purchase size set to: ' + str(self.purchase_size))
 
     def _update_limits(self):
         if self.price > self.ceiling or self.price < self.floor:
