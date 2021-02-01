@@ -14,11 +14,14 @@ class Cbot:
         self.purchase_size = self._calculate_purchase_size()
         self._reset_extreme_counts()
         self._reset_runs_since_last()
+        self._reset_runs_in_price_box()
         self._set_ceiling()
         self._set_floor()
 
     def test_run(self):
-        pass
+        self._update_pending_orders()
+        self._execute_sales()
+        #  pass
         #  self._sell_all_btc()
         #  self.price = float(self.client.current_btc_price())
         #  print(self._place_order(self.min_price))
@@ -36,7 +39,9 @@ class Cbot:
 
     def _run(self):
         self._make_money()
-        self._report()
+        if self.runs % 100 == 0:
+            print('--------------default 100th---------------')
+            self._report()
         self._handle_run_count()
 
     def _handle_run_count(self):
@@ -46,21 +51,22 @@ class Cbot:
             self.runs = 2
 
     def _report(self):
-        if self.runs % 10 == 0:
-            print('--------------------------------------')
-            print('runs: '           + str(self.runs))
-            print('BTC balance: '    + str(self.btc_balance))
-            print('USD balance: '    + str(self.usd_balance))
-            print('BTC price: '      + str(self.price))
-            print('ceiling: '        + str(self.ceiling))
-            print('floor: '          + str(self.floor))
-            print('ceiling diff: '   + str(self._ceiling_diff()))
-            print('floor diff: '     + str(self._floor_diff()))
-            print('Trend: '          + self.trend)
-            print('cash out value: ' + str(self._cash_out_value()))
-            print('stabalized: '     + self._stablabized())
-            print('purchase size: '  + str(self.purchase_size))
-            print('--------------------------------------')
+        print('runs: '             + str(self.runs))
+        print('**')
+        print('BTC price: '        + str(self.price))
+        print('ceiling: '          + str(self.ceiling))
+        print('floor: '            + str(self.floor))
+        print('ceiling diff: '     + str(self._ceiling_diff()))
+        print('floor diff: '       + str(self._floor_diff()))
+        print('**')
+        print('Trend: '            + self.trend)
+        print('stabalized: '       + self._stablabized())
+        print('runs in price box:' + str(self.runs_in_price_box))
+        print('**')
+        print('BTC balance: '      + str(self.btc_balance))
+        print('USD balance: '      + str(self.usd_balance))
+        print('cash out value: '   + str(self._cash_out_value()))
+        print('purchase size: '    + str(self.purchase_size))
 
     def _stablabized(self):
         if self._holding_at_peak():
@@ -77,10 +83,13 @@ class Cbot:
         return self._holding() and self.trend == 'd'
 
     def _holding(self):
-        return self.runs_since_last_transaction >= 100
+        return self.runs_in_price_box >= 100
 
     def _reset_runs_since_last(self):
         self.runs_since_last_transaction = 0
+
+    def _reset_runs_in_price_box(self):
+        self.runs_in_price_box = 0
 
     def _ceiling_diff(self):
         return self.price - self.ceiling
@@ -98,6 +107,7 @@ class Cbot:
         if self.price > self.ceiling or self.price < self.floor:
             self._set_ceiling()
             self._set_floor()
+            self._reset_runs_in_price_box()
 
     def _set_purchase_size(self):
         self.purchase_size = round(self._calculate_purchase_size(), 2)
@@ -129,10 +139,26 @@ class Cbot:
 
     def _run_transactions(self):
         if self._time_to_buy():
-            print('time to buy')
+            print('time to buy ~~~~~~~~~~~')
+            print('    new valley: ' + str(self._new_valley()))
+            print('        trend: ' + self.trend)
+            print('        runs_in_valley: ' + str(self.runs_in_valley))
+            print('    moving_steadily_up: ' + str(self._moving_steadily_up()))
+            print('        above_ceiling: : ' + str(self._above_ceiling()))
+            print('    new_up_trend: ' + str(self._new_up_trend()))
+            print('        new_trend: ' + str(self.new_trend))
+            print('+++++++++++++++++ TIME TO BUY ++++++++++++++++++')
+            self._report()
             self._run_buys()
         elif self._time_to_sell():
-            print('time to sell')
+            print('time to sell ~~~~~~~~~~~')
+            print('    _new_peak: ' + str(self._new_peak()))
+            print('        trend: ' + self.trend) 
+            print('        runs_at_peak: ' + str(self.runs_at_peak)) 
+            print('    _new_down_trend: ' + str(self._new_down_trend()))
+            print('        new_trend: ' + str(self.new_trend))
+            print('+++++++++++++++++ TIME TO SELL ++++++++++++++++++')
+            self._report()
             self._run_sales()
         else:
             self.runs_since_last_transaction += 1
@@ -150,15 +176,12 @@ class Cbot:
             self._reset_extreme_counts()
         else:
             self.new_trend = False
+            self.runs_in_price_box += 1
 
         if self._holding_in_valley():
             self.runs_in_valley += 1
-            if self.runs_in_valley % 100 == 0:
-                print('holding valley: ' + str(self.runs_in_valley))
         elif self._holding_at_peak():
             self.runs_at_peak += 1
-            if self.runs_at_peak % 100 == 0:
-                print('holding peak: ' + str(self.runs_in_valley))
         else:
             self._reset_extreme_counts()
 
@@ -260,7 +283,6 @@ class Cbot:
 
     def _update_pending_orders(self):
         for order in Order.pending():
-            print(order.status)
             cb_record = self.client.get_order(order.external_id)
             if self._needs_update(cb_record.get('status'), order.status):
                 order.execute(cb_record)
@@ -269,7 +291,11 @@ class Cbot:
         total_to_sell = 0.0
         for order in Order.profitable(self.price):
             total_to_sell += (order.filled_size or 0)
+
         if total_to_sell > 0:
+            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
+            print('attempting to sell: ' + str(total_to_sell))
+            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
             rounded_total = round(total_to_sell, 8)
             result = self.client.place_market_sale(rounded_total)
             Order.create(result)
