@@ -21,7 +21,7 @@ class Client():
     def place_market_sale(self, amount):
         return cb_auth_cli.place_market_order(product_id='BTC-USD',
                                                 side='sell',
-                                                funds=amount)
+                                                size=amount)
 
     def get_order(self, order_id):
         return cb_auth_cli.get_order(order_id)

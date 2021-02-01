@@ -1,3 +1,4 @@
+# WIPN TESt
 ## TODO:
 - pending sale problem
     when i sell, i'm not selling specific orders, rather the sum of their values.
@@ -60,22 +61,19 @@
 
 ### MARKET SALE RESPONSE
 ```
-{
-  'id': 'aaaaaaaa-bbbb-1111-111q-f00bar111',
-  'product_id': 'BTC-USD',
-  'side': 'sell',
-  'stp': 'dc',
-  'funds': '5',
-  'specified_funds': '5',
-  'type': 'market',
-  'post_only': False,
-  'created_at': '2021-01-30T19:04:43.481821Z',
-  'fill_fees': '0',
-  'filled_size': '0',
-  'executed_value': '0',
-  'status': 'pending',
-  'settled': False
-}
+{'id': '74082a89-4206-4ba5-8d88-513157222dd9',
+'size': '0.001',
+'product_id': 'BTC-USD',
+'side': 'sell',
+'stp': 'dc',
+'type': 'market',
+'post_only': False,
+'created_at': '2021-02-01T00:30:30.289238Z',
+'fill_fees': '0',
+'filled_size': '0',
+'executed_value': '0',
+'status': 'pending',
+'settled': False}
 ```
 
 ### GET ORDER (post sale)

@@ -17,7 +17,6 @@ class Websocket(cbpro.WebsocketClient):
             self.cbot = Cbot()
             self.app_runs = 0
         else:
-            print(self.app_runs)
             self.cbot(msg.get('price'), self.app_runs)
             self.app_runs += 1
 

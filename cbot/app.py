@@ -1,27 +1,30 @@
 from cbot.client     import Client
 from cbot.model      import Order
-from cbot.db         import session
 
 class Cbot:
-    trend = 'down' # assume on start so we don't buy right away
+    trend = 'd' # assume on start so we don't buy right away
+    min_price = 35
+    margin = 0.015
+    purchase_percentage = 0.05
 
     def __init__(self):
         self.client = Client()
         self.price = self.client.current_btc_price()
+        self._update_balances()
         self.purchase_size = self._calculate_purchase_size()
         self._reset_extreme_counts()
         self._reset_runs_since_last()
-        self._update_limits()
+        self._set_ceiling()
+        self._set_floor()
 
     def test_run(self):
-        self.price = float(self.client.current_btc_price())
-        print(self.price)
-        #  sale_result = self.client.place_market_sale(5)
-        #  buy_result = self.client.place_market_buy(5)
-        #  order_query_result = self.client.get_order(foobar)
-        #  print(sale_result)
-        #  print(buy_result)
-        #  print(order_query_result)
+        pass
+        #  self._sell_all_btc()
+        #  self.price = float(self.client.current_btc_price())
+        #  print(self._place_order(self.min_price))
+        #  self._update_pending_orders()
+        #  self._execute_sales()
+        #  self._update_pending_orders()
 
     def __call__(self, price, runs):
         self.runs = runs
@@ -38,14 +41,13 @@ class Cbot:
 
     def _handle_run_count(self):
         self.runs += 1
-        if self.runs == 1000:
+        if self.runs == 10:
             self.adjust_purchase_size()
             self.runs = 2
 
     def _report(self):
         if self.runs % 10 == 0:
-            self.btc_balance = self.client.btc_balance()
-            self.usd_balance = self.client.usd_balance()
+            print('--------------------------------------')
             print('runs: '           + str(self.runs))
             print('BTC balance: '    + str(self.btc_balance))
             print('USD balance: '    + str(self.usd_balance))
@@ -69,13 +71,13 @@ class Cbot:
             return 'False'
 
     def _holding_at_peak(self):
-        return self._holding() and self.trend == 'up'
+        return self._holding() and self.trend == 'u'
 
     def _holding_in_valley(self):
-        return self._holding() and self.trend == 'down'
+        return self._holding() and self.trend == 'd'
 
     def _holding(self):
-        return self.runs_since_last_transaction >= 1000
+        return self.runs_since_last_transaction >= 100
 
     def _reset_runs_since_last(self):
         self.runs_since_last_transaction = 0
@@ -90,57 +92,73 @@ class Cbot:
         return self.btc_balance * self.price + self.usd_balance
 
     def adjust_purchase_size(self):
-        if self._double_profit():
-            self._set_purchase_size()
-
-    def _double_profit(self):
-        return self.client.usd_balance >= self.purchase_size * 200
+        self._set_purchase_size()
 
     def _update_limits(self):
-        self._set_ceiling()
-        self._set_floor()
+        if self.price > self.ceiling or self.price < self.floor:
+            self._set_ceiling()
+            self._set_floor()
 
     def _set_purchase_size(self):
         self.purchase_size = round(self._calculate_purchase_size(), 2)
 
     def _make_money(self):
+        self._update_balances()
         self._monitor_trend()
         self._run_transactions()
         self._update_pending_orders()
+        self._update_limits()
+
+    def _update_balances(self):
+        self.btc_balance = self.client.btc_balance()
+        self.usd_balance = self.client.usd_balance()
 
     def _run_buys(self):
-        #  self.client.place_market_buy(self.purchase_size)
-        self._last_transaction_rate = self.price
-        self._update_limits()
+        self._place_order(self.purchase_size)
+        self.last_transaction_rate = self.price
         self._reset_runs_since_last()
+
+    def _place_order(self, amount):
+        result = self.client.place_market_buy(amount)
+        return Order.create(result)
 
     def _run_sales(self):
-        #  self._execute_sales()
-        self._last_transaction_rate = self.price
-        self._update_limits()
+        self._execute_sales()
+        self.last_transaction_rate = self.price
         self._reset_runs_since_last()
-
 
     def _run_transactions(self):
         if self._time_to_buy():
+            print('time to buy')
             self._run_buys()
         elif self._time_to_sell():
+            print('time to sell')
             self._run_sales()
         else:
             self.runs_since_last_transaction += 1
 
     def _monitor_trend(self):
-        if self._new_down_trend():
-            self.trend = 'down'
+        if self._down_turn():
+            print('down turn')
+            self.trend = 'd'
+            self.new_trend = True
             self._reset_extreme_counts()
-        elif self._new_up_trend():
-            self.trend = 'up'
+        elif self._up_turn():
+            print('up turn')
+            self.trend = 'u'
+            self.new_trend = True
             self._reset_extreme_counts()
+        else:
+            self.new_trend = False
 
         if self._holding_in_valley():
             self.runs_in_valley += 1
+            if self.runs_in_valley % 100 == 0:
+                print('holding valley: ' + str(self.runs_in_valley))
         elif self._holding_at_peak():
             self.runs_at_peak += 1
+            if self.runs_at_peak % 100 == 0:
+                print('holding peak: ' + str(self.runs_in_valley))
         else:
             self._reset_extreme_counts()
 
@@ -148,37 +166,42 @@ class Cbot:
         self.runs_at_peak = 0
         self.runs_in_valley = 0
 
-    def _new_up_trend(self):
-        return self.trend == 'down' and self._above_ceiling()
-
+    #  [wipn] START HERE - getting false positives for time to sell... figure out why
     def _time_to_sell(self):
-        self._new_peak() or self._new_down_trend()
+        return self._new_peak() or self._new_down_trend()
 
     def _new_down_trend(self):
-        return self.trend == 'up' and self._below_floor()
+        return self.trend == 'd' and self.new_trend
+
+    def _new_up_trend(self):
+        return self.trend == 'u' and self.new_trend
+
+    def _up_turn(self):
+        return self.trend == 'd' and self._above_ceiling()
+
+    def _down_turn(self):
+        return self.trend == 'u' and self._below_floor()
 
     def _time_to_buy(self):
         return self._purchase_rules_apply() and self._funds_available()
 
     def _purchase_rules_apply(self):
-        return self._new_valley() or self._moving_steadily_up()
+        return self._new_valley() or self._moving_steadily_up() or self._new_up_trend()
 
     def _new_peak(self):
-        # arbitrary time at peak, but check twice incase of race conditions
-        return self.trend == 'up' and (self.runs_at_peak == 1001 or self.runs_at_peak == 1111)
+        return self.trend == 'u' and (self.runs_at_peak == 101)
 
     def _new_valley(self):
-        # buy twice on long valleys
-        return self.trend == 'down' and (self.runs_in_valley == 1001 or self.runs_in_valley == 10001)
+        return self.trend == 'd' and (self.runs_in_valley == 101)
 
     def _funds_available(self):
-        return self.usd_balance() >= self.purchase_size
+        return self.usd_balance >= self.purchase_size
 
     def _moving_steadily_up(self):
-        return self.trend == 'up' and self._above_ceiling()
+        return self.trend == 'u' and self._above_ceiling()
 
     def _moving_steadily_down(self):
-         return self.trend == 'down' and self._below_floor()
+         return self.trend == 'd' and self._below_floor()
 
     def _below_floor(self):
         return self.price <= self.floor
@@ -189,32 +212,35 @@ class Cbot:
     def _needs_update(self, ext_status, int_status):
         return ext_status != 'pending' and ext_status != int_status
 
-    def _profitable_orders(self):
-        return Order.profitable(self.current_price)
-
     def _calculate_purchase_size(self):
-        return self.client.usd_balance() * float(0.05)
+        percentage_based = self.usd_balance * self.purchase_percentage
+        if percentage_based < self.min_price:
+            return self.min_price
+        else:
+            return percentage_based
 
     def _set_ceiling(self):
-        self.ceiling = self.price * 0.02 + self.price
+        self.ceiling = self.price * self.margin + self.price
 
     def _set_floor(self):
-        self.floor = self.price - self.price * 0.02
+        self.floor = self.price - self.price * self.margin
 
-    def _execute_sales(self):
-        total_to_sell = 0
-        for order in self._profitable_orders():
-            total_to_sell = total_to_sell + float(order['btc_quantity'])
-            #  [wipn] implement this
-            order.mark_sale_pending()
-
-        if total_to_sell > 0:
-            self.client.place_market_sale(total_to_sell)
-
-    #  [wipn] will this work for pending sales as well?
     def _update_pending_orders(self):
         for order in Order.pending():
+            print(order.status)
             cb_record = self.client.get_order(order.external_id)
-
             if self._needs_update(cb_record.get('status'), order.status):
-                order.execute_purchase(cb_record)
+                order.execute(cb_record)
+
+    def _execute_sales(self):
+        total_to_sell = 0.0
+        for order in Order.profitable(self.price):
+            total_to_sell += (order.filled_size or 0)
+        if total_to_sell > 0:
+            rounded_total = round(total_to_sell, 8)
+            result = self.client.place_market_sale(rounded_total)
+            Order.create(result)
+
+    def _sell_all_btc(self):
+        amt = self.client.btc_balance()
+        self.client.place_market_sale(amt)
