@@ -2,27 +2,16 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from decouple import config
 
-engine = create_engine(config('LOCAL_DB_PATH'))
-Session = sessionmaker(bind=engine)
-session = Session()
-
 class CRUD():
-    session = session
+    session = sessionmaker(bind=create_engine(config('LOCAL_DB_PATH')))()
 
     def save(self):
-        session.add(self)
-        return session.commit()
-
-    def update(self, params={}):
-        self(params).save
-        external_id = params.get('id')
+        self.session.add(self)
+        return self.session.commit()
 
     def destroy(self):
-        session.delete(self)
-        return session.commit()
+        self.session.delete(self)
+        return self.session.commit()
 
     def query(self):
-        return session.query(self)
-
-    def default_query(self):
-        return self.session.query(*self.structure)
+        return self.session.query(self)

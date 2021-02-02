@@ -1,9 +1,11 @@
 # WIPN TESt
 ## TODO:
-- throttle request per second
-    checking balances every time is kickcing me over the 5 request per second 
-    threshold, which is when i start getting  back empty responses
-      - refactor balance check out of main app
+- add 'no response' handling to prevent erroneous transacting on bad data
+    Some times request will fail.  I have the choice of letting something blow up,
+    or failing it quietly.  If this is going to be long runningm, obviously I
+    don't want it blowing up, but I do need to find a way to monitor for 
+    API garbage responses, so I don't make a calculation with a '0' when I 
+    should have no value
 - update trend reversal logic to use velocity or buy / sell ratio
     I can make this way smarter by watching for shifts in market trends
     instead of hard numbers.  I think this will work best for buying, as it

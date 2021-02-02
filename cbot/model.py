@@ -85,11 +85,9 @@ class Order(Base, CRUD):
 
     def _set_mpr(self):
         self.minimum_profitable_rate = self._calculate_mpr()
-        print('mpr set at: ' + str(self.minimum_profitable_rate))
 
     def _calculate_mpr(self):
         return self.purchase_rate * 0.015 + self.purchase_rate
 
     def _set_purchase_rate(self):
         self.purchase_rate = self.executed_value * self.filled_size
-        print('purchase rate set at: ' + str(self.purchase_rate))
