@@ -15,36 +15,44 @@ class CbClient():
                                               self.coinbase_passphrase)
 
     def place_market_buy(self, amount):
-        return self.auth_cli.place_market_order(product_id='BTC-USD',
+        resp = self.auth_cli.place_market_order(product_id='BTC-USD',
                                                 side='buy',
                                                 funds=amount)
+        return self._qualified(resp)
 
     def place_market_sale(self, amount):
-        return self.auth_cli.place_market_order(product_id='BTC-USD',
+        resp = self.auth_cli.place_market_order(product_id='BTC-USD',
                                                 side='sell',
                                                 size=amount)
+        return self._qualified(resp)
 
     def get_order(self, order_id):
-        return self.auth_cli.get_order(order_id)
+        resp = self.auth_cli.get_order(order_id)
+        return self._qualified(resp)
 
     def usd_balance(self):
-        result = self.auth_cli.get_account(self.usd_acc_num)
-        balance = result.get('balance')
-        if balance != None:
-            return float(balance)
-        else:
-            return 0
+        resp = self.auth_cli.get_account(self.usd_acc_num)
+        qualified = self._qualified(resp)
+        if qualified['success']:
+            return float(resp.get('balance'))
 
     def coin_balance(self):
-        result = self.auth_cli.get_account(self.btc_acc_num)
-        balance = result.get('balance')
-        if balance != None:
-            return float(balance)
-        else:
-            return 0
+        resp = self.auth_cli.get_account(self.usd_acc_num)
+        qualified = self._qualified(resp)
+        if qualified['success']:
+            return float(resp.get('balance'))
 
     def current_coin_price(self):
-        return float(self.pub_cli.get_product_ticker('BTC-USD').get('price'))
+        resp = self.pub_cli.get_product_ticker('BTC-USD')
+        qualified = self._qualified(resp)
+        if qualified['success']:
+            return float(resp.get('price'))
 
     def market(self):
         return 'BTC-USD'
+
+    #  [wipn] START HERE - continue trying to decorate the client response with
+    #  a success indicator
+    def _qualified(self, resp):
+        resp['success'] = resp.get('error') == None
+        return resp

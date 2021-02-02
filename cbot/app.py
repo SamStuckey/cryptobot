@@ -20,7 +20,7 @@ class Cbot:
 
     # test only logic
     def test_run(self):
-        pass
+        #  pass
         #  self._sell_all_coin()
         #  self._update_pending_orders()
         #  self._execute_sales()
