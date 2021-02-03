@@ -19,7 +19,7 @@ class Cbot:
         self._set_floor()
 
     def test_run(self):
-        self._execute_sales()
+        self._sell_all_coin()
 
     def _sell_all_coin(self):
         amt = self.client.coin_balance()
@@ -218,7 +218,13 @@ class Cbot:
         return self._purchase_rules_apply() and self._funds_available()
 
     def _purchase_rules_apply(self):
-        return (self._new_valley() or self._moving_steadily_up() or self._new_up_trend()) and self.runs_at_peak == 0
+        return self._valley_or_uptick()  and not self._peaked()
+
+    def _valley_or_uptick(self):
+        return self._new_valley() or self._moving_steadily_up() or self._new_up_trend()
+
+    def _peaked(self):
+        return self._holding_at_peak() or self._new_peak()
 
     def _new_peak(self):
         return self.trend == 'u' and (self.runs_at_peak == 101)
