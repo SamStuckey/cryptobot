@@ -9,19 +9,20 @@ class Cbot:
 
     def __init__(self):
         self.client = CbClient()
-        self.price = self.client.current_coin_price()
-        self._update_balances()
-        self.purchase_size = self._calculate_purchase_size()
-        self._reset_extreme_counts()
-        self._reset_runs_since_last()
-        self._reset_runs_in_price_box()
-        self._set_ceiling()
-        self._set_floor()
+        #  self.price = self.client.current_coin_price()
+        #  self._update_balances()
+        #  self.purchase_size = self._calculate_purchase_size()
+        #  self._reset_extreme_counts()
+        #  self._reset_runs_since_last()
+        #  self._reset_runs_in_price_box()
+        #  self._set_ceiling()
+        #  self._set_floor()
 
     # test only logic
     def test_run(self):
-        #  pass
+        self.client.usd_balance()
         #  self._sell_all_coin()
+        #  self._update_pending_orders()
         #  self._update_pending_orders()
         #  self._execute_sales()
         #  self.price = float(self.client.current_coin_price())
@@ -70,7 +71,7 @@ class Cbot:
         print('floor diff: '       + str(self._floor_diff()))
         print('**')
         print('Trend: '            + self.trend)
-        print('stabalized: '       + self._stablabized())
+        print('stabilized: '       + self._stablabized())
         print('runs in price box:' + str(self.runs_in_price_box))
         print('**')
         print('Coin balance: '      + str(self.coin_balance))

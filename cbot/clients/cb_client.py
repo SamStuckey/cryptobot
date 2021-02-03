@@ -1,4 +1,4 @@
-from cbpro import PublicClient, AuthenticatedClient
+from cbpro2 import PublicClient, AuthenticatedClient
 from decouple import config
 
 class CbClient():
@@ -15,13 +15,13 @@ class CbClient():
                                               self.coinbase_passphrase)
 
     def place_market_buy(self, amount):
-        resp = self.auth_cli.place_market_order(product_id='BTC-USD',
+        resp = self.auth_cli.place_market_order(product_id=self.market(),
                                                 side='buy',
                                                 funds=amount)
         return self._qualified(resp)
 
     def place_market_sale(self, amount):
-        resp = self.auth_cli.place_market_order(product_id='BTC-USD',
+        resp = self.auth_cli.place_market_order(product_id=self.market(),
                                                 side='sell',
                                                 size=amount)
         return self._qualified(resp)
@@ -32,9 +32,10 @@ class CbClient():
 
     def usd_balance(self):
         resp = self.auth_cli.get_account(self.usd_acc_num)
-        qualified = self._qualified(resp)
-        if qualified['success']:
-            return float(resp.get('balance'))
+        print(resp.status_code)
+        #  qualified = self._qualified(resp)
+        #  if qualified['success']:
+        #      return float(resp.get('balance'))
 
     def coin_balance(self):
         resp = self.auth_cli.get_account(self.usd_acc_num)
@@ -54,5 +55,6 @@ class CbClient():
     #  [wipn] START HERE - continue trying to decorate the client response with
     #  a success indicator
     def _qualified(self, resp):
-        resp['success'] = resp.get('error') == None
-        return resp
+        pass
+        #  resp['success'] = resp.get('error') == None
+        #  return resp
