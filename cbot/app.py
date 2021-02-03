@@ -4,7 +4,7 @@ from cbot.model      import Order
 class Cbot:
     trend = 'd' # assume on start so we don't buy right away
     min_price = 35
-    margin = 0.015
+    margin = 0.011
     purchase_percentage = 0.05
 
     def __init__(self):
