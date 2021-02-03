@@ -27,7 +27,7 @@ class AuthenticatedClient(PublicClient):
         session (requests.Session): Persistent HTTP connection object.
     """
     def __init__(self, key, b64secret, passphrase,
-                 api_url="https://api.pro.coinbase.com", raw=False):
+                 api_url="https://api.pro.coinbase.com"):
         """ Create an instance of the AuthenticatedClient class.
 
         Args:
@@ -36,7 +36,6 @@ class AuthenticatedClient(PublicClient):
             passphrase (str): Passphrase chosen when setting up key.
             api_url (Optional[str]): API URL. Defaults to cbpro API.
         """
-        print(raw)
         super(AuthenticatedClient, self).__init__(api_url)
         self.auth = CBProAuth(key, b64secret, passphrase)
         self.session = requests.Session()

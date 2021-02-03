@@ -9,32 +9,21 @@ class Cbot:
 
     def __init__(self):
         self.client = CbClient()
-        #  self.price = self.client.current_coin_price()
-        #  self._update_balances()
-        #  self.purchase_size = self._calculate_purchase_size()
-        #  self._reset_extreme_counts()
-        #  self._reset_runs_since_last()
-        #  self._reset_runs_in_price_box()
-        #  self._set_ceiling()
-        #  self._set_floor()
+        self._update_balances()
+        self.price = self.client.current_coin_price()
+        self.purchase_size = self._calculate_purchase_size()
+        self._reset_extreme_counts()
+        self._reset_runs_since_last()
+        self._reset_runs_in_price_box()
+        self._set_ceiling()
+        self._set_floor()
 
-    # test only logic
     def test_run(self):
-        self.client.usd_balance()
-        #  self._sell_all_coin()
-        #  self._update_pending_orders()
-        #  self._update_pending_orders()
-        #  self._execute_sales()
-        #  self.price = float(self.client.current_coin_price())
-        #  print(self._place_order(self.min_price))
-        #  self._update_pending_orders()
-        #  self._execute_sales()
-        #  self._update_pending_orders()
+        pass
 
     def _sell_all_coin(self):
         amt = self.client.coin_balance()
         self.client.place_market_sale(amt)
-    # test only logic
 
     def __call__(self, price, runs):
         self.runs = runs
@@ -42,7 +31,10 @@ class Cbot:
             return 0
         else:
             self.price = float(price)
-            return self._run()
+            try: 
+                return self._run()
+            except:
+                pass
 
     def _run(self):
         self._make_money()
@@ -61,10 +53,10 @@ class Cbot:
             self.runs = 2
 
     def _report(self):
-        print('market: '           + self.client.market())
+        print('market: '           + 'BTC-USD')
         print('runs: '             + str(self.runs))
         print('**')
-        print('Coin price: '        + str(self.price))
+        print('Coin price: '       + str(self.price))
         print('ceiling: '          + str(self.ceiling))
         print('floor: '            + str(self.floor))
         print('ceiling diff: '     + str(self._ceiling_diff()))
@@ -74,7 +66,7 @@ class Cbot:
         print('stabilized: '       + self._stablabized())
         print('runs in price box:' + str(self.runs_in_price_box))
         print('**')
-        print('Coin balance: '      + str(self.coin_balance))
+        print('Coin balance: '     + str(self.coin_balance))
         print('USD balance: '      + str(self.usd_balance))
         print('cash out value: '   + str(self._cash_out_value()))
         print('purchase size: '    + str(self.purchase_size))
@@ -94,7 +86,7 @@ class Cbot:
         return self._holding() and self.trend == 'd'
 
     def _holding(self):
-        return self.runs_in_price_box >= 100
+        return self.runs_in_price_box >= 1000
 
     def _reset_runs_since_last(self):
         self.runs_since_last_transaction = 0
@@ -208,8 +200,7 @@ class Cbot:
         self.runs_in_valley = 0
 
     def _time_to_sell(self):
-        #  return self._new_peak() or self._new_down_trend()
-        return self.runs == 20 or self.runs == 40
+        return self._new_peak() or self._new_down_trend()
 
     def _new_down_trend(self):
         return self.trend == 'd' and self.new_trend
@@ -224,8 +215,7 @@ class Cbot:
         return self.trend == 'u' and self._below_floor()
 
     def _time_to_buy(self):
-        #  return self._purchase_rules_apply() and self._funds_available()
-        return self.runs == 10 or self.runs == 30
+        return self._purchase_rules_apply() and self._funds_available()
 
     def _purchase_rules_apply(self):
         return self._new_valley() or self._moving_steadily_up() or self._new_up_trend()
@@ -284,9 +274,6 @@ class Cbot:
             total_to_sell += (order.filled_size or 0)
 
         if total_to_sell > 0:
-            print('$$$ - attempting to sell: ' + str(total_to_sell))
             rounded_total = round(total_to_sell, 8)
             result = self.client.place_market_sale(rounded_total)
-            print('####### sale API result #########')
-            print(result)
             new_order = Order.create(result)

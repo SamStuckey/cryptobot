@@ -6,7 +6,8 @@ class CbClient():
     coinbase_secret     = config('CB_API_SKEY')
     coinbase_passphrase = config('CB_PASSPHRASE')
     usd_acc_num         = config('CB_USD_ACC_NUM')
-    btc_acc_num         = config('CB_BTC_ACC_NUM')
+    coin_acc_num        = config('CB_BTC_ACC_NUM')
+    market              = 'BTC-USD' # config('MARKET')
 
     def __init__(self):
         self.pub_cli  = PublicClient()
@@ -15,46 +16,59 @@ class CbClient():
                                               self.coinbase_passphrase)
 
     def place_market_buy(self, amount):
-        resp = self.auth_cli.place_market_order(product_id=self.market(),
+        resp = self.auth_cli.place_market_order(product_id='BTC-USD',
                                                 side='buy',
                                                 funds=amount)
-        return self._qualified(resp)
+        if resp.status_code == 200:
+            return resp.json()
+        else:
+            self._log_failure(resp, 'place_market_buy')
 
     def place_market_sale(self, amount):
-        resp = self.auth_cli.place_market_order(product_id=self.market(),
+        resp = self.auth_cli.place_market_order(product_id='BTC-USD',
                                                 side='sell',
                                                 size=amount)
-        return self._qualified(resp)
+        if resp.status_code == 200:
+            return resp.json()
+        else:
+            self._log_failure(resp, 'place_market_sale')
 
     def get_order(self, order_id):
         resp = self.auth_cli.get_order(order_id)
-        return self._qualified(resp)
+        if resp.status_code == 200:
+            return resp.json 
+        else:
+            self._log_failure(resp, 'get_order')
+ 
 
     def usd_balance(self):
         resp = self.auth_cli.get_account(self.usd_acc_num)
-        print(resp.status_code)
-        #  qualified = self._qualified(resp)
-        #  if qualified['success']:
-        #      return float(resp.get('balance'))
+        if resp.status_code == 200:
+            return float(resp.json().get('balance'))
+        else:
+            self._log_failure(resp, 'usd_balance')
 
     def coin_balance(self):
-        resp = self.auth_cli.get_account(self.usd_acc_num)
-        qualified = self._qualified(resp)
-        if qualified['success']:
-            return float(resp.get('balance'))
+        resp = self.auth_cli.get_account(self.coin_acc_num)
+        if resp.status_code == 200:
+            return float(resp.json().get('balance'))
+        else:
+            self._log_failure(resp, 'coin_balance')
+
 
     def current_coin_price(self):
         resp = self.pub_cli.get_product_ticker('BTC-USD')
-        qualified = self._qualified(resp)
-        if qualified['success']:
-            return float(resp.get('price'))
+        if resp.status_code == 200:
+            return float(resp.json().get('price'))
+        else:
+            self._log_failure(resp, 'current_coin_price')
+
+    def _log_failure(self, resp, method_name):
+        print('!!!!!!!!!!!!! API ERROR !!!!!!!!!!!!!')
+        print(method_name)
+        print(resp.status_code)
+        print(resp.json())
+        raise Exception('!!!!!!!!!!!!! API ERROR !!!!!!!!!!!!!')
 
     def market(self):
-        return 'BTC-USD'
-
-    #  [wipn] START HERE - continue trying to decorate the client response with
-    #  a success indicator
-    def _qualified(self, resp):
-        pass
-        #  resp['success'] = resp.get('error') == None
-        #  return resp
+        return self.market
