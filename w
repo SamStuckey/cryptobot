@@ -31,10 +31,11 @@ class Cbot:
             return 0
         else:
             self.price = float(price)
-            try:
-                return self._run()
-            except:
-                pass
+            self._run()
+            #  try:
+            #      return self._run()
+            #  except:
+            #      pass
 
     def _run(self):
         self._make_money()
@@ -43,7 +44,7 @@ class Cbot:
 
     def _default_report(self):
         if self.runs % 10 == 0:
-            print('--------------default 10th---------------')
+            print('--------------default 100th---------------')
             self._report()
 
     def _handle_run_count(self):

@@ -36,7 +36,8 @@ class CbClient():
     def get_order(self, order_id):
         resp = self.auth_cli.get_order(order_id)
         if resp.status_code == 200:
-            return resp.json 
+            print('we made it')
+            return resp.json() 
         else:
             self._log_failure(resp, 'get_order')
  
