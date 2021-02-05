@@ -1,6 +1,7 @@
 from cbot.client     import CbClient
 from cbot.model      import Order
 
+wipn
 class Cbot:
     trend = 'd' # assume on start so we don't buy right away
     min_price = 35
