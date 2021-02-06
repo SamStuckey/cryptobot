@@ -2,6 +2,7 @@ from cbot.client            import CbClient
 from cbot.order             import Order
 from cbot.algorithm.bellows import Bellows
 
+wipn
 class Cbot:
     margin = 0.011
     purchase_percentage = 0.05
