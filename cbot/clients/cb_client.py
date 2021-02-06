@@ -49,15 +49,15 @@ class CbClient():
         else:
             self._log_failure(resp, 'usd_balance')
 
-    def coin_balance(self):
-        resp = self.auth_cli.get_account(self.coin_acc_num)
+    def coin_balance(self, symbol):
+        resp = self.auth_cli.get_account(symbol)
         if resp.status_code == 200:
             return float(resp.json().get('balance'))
         else:
             self._log_failure(resp, 'coin_balance')
 
 
-    def current_coin_price(self):
+    def coin_price(self):
         resp = self.pub_cli.get_product_ticker('BTC-USD')
         if resp.status_code == 200:
             return float(resp.json().get('price'))
