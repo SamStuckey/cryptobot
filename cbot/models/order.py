@@ -15,6 +15,7 @@ class Order(Model):
     #      status VARCHAR NOT NULL,
     #      settled VARCHAR,
     #      side VARCHAR
+    #      sold BOOLEAN NOT NULL DEFAULT FALSE
     #  );
 
     id                      = Column(Integer, primary_key=True)
@@ -27,6 +28,7 @@ class Order(Model):
     status                  = Column('status', String)
     settled                 = Column('settled', String)
     side                    = Column('side', String)
+    sold                    = Column('sold', String)
 
     def __repr__(self):
         return '''
@@ -38,16 +40,19 @@ class Order(Model):
                 product_id='%s',
                 status='%s',
                 settled='%s',
-                side='%s')>
+                side='%s',
+                sold='%s')>
         ''' % (self.purchase_rate, self.filled_size,
                self.minimum_profitable_rate, self.executed_value,
                self.external_id, self.product_id, self.status,
-               self.settled, self.side) 
+               self.settled, self.side, self.sold) 
 
     @classmethod
     def profitable(self, current_price):
         return self.query(self).filter(
-                self.minimum_profitable_rate <= float(current_price)).all()
+                self.minimum_profitable_rate <= float(current_price),
+                sold == False,
+                side == 'buy').all()
 
     @classmethod
     def pending(self):

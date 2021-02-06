@@ -36,6 +36,8 @@ class Transactor:
         total_to_sell = 0.0
         for order in Order.profitable(self.price, self.market):
             total_to_sell += (order.filled_size or 0)
+            order.sold = True
+            order.save()
 
         if total_to_sell > 0:
             rounded_total = round(total_to_sell, 8)
