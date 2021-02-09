@@ -18,19 +18,9 @@ class Coin:
         self.price = self.client.coin_price(self.market)
         return self.price
 
-    def _place_order(self, amount):
-        result = self.client.place_market_buy(amount)
-        print('####### buy API result #########')
-        print(result)
-        return Order.create(result)
+    def buy(self, amount):
+        return self.client.place_market_buy(amount, self.market)
 
-    def _funds_available(self):
-        return self.usd_balance >= self.purchase_size
-
-    def _adjust_purchase_size(self):
-        self._set_purchase_size()
-        print('purchase size set to: ' + str(self.purchase_size))
-
-    def _set_purchase_size(self):
-        self.purchase_size = round(self._calculate_purchase_size(), 2)
+    def sell(self, amount):
+        return self.client.place_market_sale(amount, self.market)
 

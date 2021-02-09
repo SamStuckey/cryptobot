@@ -1,37 +1,54 @@
-#  [wipn] break out an analyzer and state object
 class Bellows:
     trend = 'd' # assume on start so we don't buy right away
+    self.runs_at_peak      = 0
+    self.runs_in_valley    = 0
+    self.runs_in_price_box = 0
+
     def __init__(self, margin):
-        #  [wipn] START HERE - i can't have current price heere... makes sense
-        #  to break this out into two services?
-        #  self.set_ceiling(current_price)
-        #  self.set_floor(current_price)
         self.margin = margin
 
-    def process_change(self, current_price):
-        self._monitor_trend(current_price)
-
-    def set_for_next(self, current_price):
-        self._update_limits(current_price)
-
     def time_to_sell(self, current_price):
-        return self._sales_rules_apply(current_price)
+        self._refresh_analysis(current_price)
+        return self.analysis.sell_rules_apply():
 
     def time_to_buy(self, current_price):
-        return self._purchase_rules_apply(current_price) and self._funds_available()
+        self._refresh_analysis(current_price)
+        return self.analysis.buy_rules_apply():
+
+    def _review_previous_analysis(self):
+        if self.last_price != None:
+            self._conditionally_update_limits()
+        else
+            self._reset_price_box()
+
+    def _refresh_analysis(self, current_price):
+        if current_price != self.last_price
+            self.last_price = self.current_price
+            self.current_price = current_price
+            self._run_analysis()
+
+    def _run_analysis(self)
+        self._review_previous_analysis()
+        self._monitor_trend()
 
     def _sales_rules_apply(self):
         return self._new_peak() or self._new_down_trend()
 
-    def _monitor_trend(self, current_price):
-        self._monitor_turns(current_price)
-        self._monitor_extremes(current_price)
+    def _monitor_trend(self):
+        self._monitor_turns()
+        self._monitor_extremes()
 
-    def _update_limits(self, current_price):
-        if current_price > self.ceiling or current_price < self.floor:
-            self._set_ceiling(current_price)
-            self._set_floor(current_price)
-            self._reset_runs_in_price_box()
+    def _conditionally_update_limits(self):
+        if self._out_of_price_box():
+            self._reset_price_box()
+
+    def _out_of_price_bos(self):
+        return self.current_price > self.ceiling or self.current_price < self.floor
+
+    def _reset_price_box(self):
+        self._set_ceiling()
+        self._set_floor()
+        self._reset_runs_in_price_box()
 
     def _new_peak(self):
         return self.trend == 'u' and (self.runs_at_peak == 101)
@@ -39,16 +56,16 @@ class Bellows:
     def _new_valley(self):
         return self.trend == 'd' and (self.runs_in_valley == 101)
 
-    def _moving_steadily_up(self, current_price):
-        return self.trend == 'u' and self._above_ceiling(current_price)
+    def _moving_steadily_up(self):
+        return self.trend == 'u' and self._above_ceiling()
 
-    def _monitor_turns(self, current_price):
-        if self._down_turn(current_price):
+    def _monitor_turns(self):
+        if self._down_turn():
             print('down turn')
             self.trend = 'd'
             self.new_trend = True
             self._reset_extreme_counts()
-        elif self._up_turn(current_price):
+        elif self._up_turn():
             print('up turn')
             self.trend = 'u'
             self.new_trend = True
@@ -75,32 +92,32 @@ class Bellows:
     def _new_up_trend(self):
         return self.trend == 'u' and self.new_trend
 
-    def _up_turn(self, current_price):
-        return self.trend == 'd' and self._above_ceiling(current_price)
+    def _up_turn(self):
+        return self.trend == 'd' and self._above_ceiling()
 
-    def _down_turn(self, current_price):
-        return self.trend == 'u' and self._below_floor(current_price)
+    def _down_turn(self):
+        return self.trend == 'u' and self._below_floor()
 
-    def _purchase_rules_apply(self, current_price):
-        return self._valley_or_uptick(current_price)  and not self._peaked()
+    def _purchase_rules_apply(self):
+        return self._valley_or_uptick()  and not self._peaked()
 
-    def _valley_or_uptick(self, current_price):
-        return self._new_valley() or self._moving_steadily_up(current_price) or self._new_up_trend()
+    def _valley_or_uptick(self):
+        return self._new_valley() or self._moving_steadily_up() or self._new_up_trend()
 
     def _peaked(self):
         return self._holding_at_peak() or self._new_peak()
 
-    def _below_floor(self, current_price):
-        return current_price <= self.floor
+    def _below_floor(self):
+        return self.current_price <= self.floor
 
-    def _above_ceiling(self, current_price):
-        return current_price >= self.ceiling
+    def _above_ceiling(self):
+        return self.current_price >= self.ceiling
 
-    def _set_ceiling(self, current_price):
-        self.ceiling = current_price * self.margin + current_price
+    def _set_ceiling(self):
+        self.ceiling = self.current_price * self.margin + self.current_price
 
-    def _set_floor(self, current_price):
-        self.floor = current_price - current_price * self.margin
+    def _set_floor(self):
+        self.floor = self.current_price - self.current_price * self.margin
 
     def _holding_at_peak(self):
         return self._holding() and self.trend == 'u'

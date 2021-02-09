@@ -11,10 +11,15 @@ class Bank():
     def refresh_balances(self):
         self.usd_balance = client.usd_balance()
         for coin in self.coins:
-            coins[coin] = client.coin_balance(coin)
+            coin.update_balance()
 
-    def balances(self):
-        return coins
+    def balances(self, refresh=False):
+        blncz = []
+        for c in coins:
+            if refresh:
+                coin.update_balance()
+            b.append({ 'name': c.market, 'balance': c.balance })
+        return blncz
 
     def _create_coins(self, markets):
         for market in markets:

@@ -15,8 +15,8 @@ class CbClient:
                                               self.coinbase_secret,
                                               self.coinbase_passphrase)
 
-    def place_market_buy(self, amount):
-        resp = self.auth_cli.place_market_order(product_id='BTC-USD',
+    def place_market_buy(self, amount, market):
+        resp = self.auth_cli.place_market_order(product_id=market,
                                                 side='buy',
                                                 funds=amount)
         if resp.status_code == 200:
@@ -24,8 +24,8 @@ class CbClient:
         else:
             self._log_failure(resp, 'place_market_buy')
 
-    def place_market_sale(self, amount):
-        resp = self.auth_cli.place_market_order(product_id='BTC-USD',
+    def place_market_sale(self, amount, market):
+        resp = self.auth_cli.place_market_order(product_id=market,
                                                 side='sell',
                                                 size=amount)
         if resp.status_code == 200:
@@ -55,7 +55,6 @@ class CbClient:
             return float(resp.json().get('balance'))
         else:
             self._log_failure(resp, 'coin_balance')
-
 
     def coin_price(self, market):
         resp = self.pub_cli.get_product_ticker(market)

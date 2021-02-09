@@ -7,8 +7,7 @@ class Logger:
         print('        runs_in_valley: '  + str(self.algorithm.runs_in_valley))
         print('    moving_steadily_up: '  + str(self.algorithm.moving_steadily_up()))
         print('        above_ceiling: '   + str(self.algorithm.above_ceiling()))
-        print('    new_up_trend: '        + str(self.algorithm.new_up_trend()))
-        print('        new_trend: '       + str(self.algorithm.new_trend))
+        print('    new_up_trend: '        + str(self.algorithm.new_up_trend())) print('        new_trend: '       + str(self.algorithm.new_trend))
 
     @class_method
     def sell_report(self, algorithm):
@@ -20,13 +19,16 @@ class Logger:
         print('        new_trend: '    + str(self.new_trend))
 
     @class_method
-    def default_report(self, algorithm, coin, balance):
+    def default_report(self, transactor, balance):
+        ceil_diff  = coin.price - algorithm.ceiling
+        floor_diff = coin.price - algorithm.floor
+
         print('market: '           + self.market)
         print('Coin price: '       + str(coin.price))
         print('ceiling: '          + str(algorithm.ceiling))
         print('floor: '            + str(algorithm.floor))
-        print('ceiling diff: '     + str(self.ceiling_diff(coin, algorithm)))
-        print('floor diff: '       + str(self.floor_diff(coin, algorithm)))
+        print('ceiling diff: '     + str(ceil_diff)
+        print('floor diff: '       + str(floor_diff)
         print('**')
         print('Trend: '            + algorithm.trend)
         print('runs in price box:' + str(algorithm.runs_in_price_box))
@@ -37,20 +39,11 @@ class Logger:
         print('---------------------------')
 
     @class_method
-    def report_cash_out_value(self):
+    def report_cash_out_value(self, bank):
         total = 0
-        for coin in self.bank.coins():
+        for coin in bank.coins():
             total += coin.worth
             print(str(coin.symbol) + ': ' + str(coin.worth))
-        print('USD: ' + self.bank.usd_balance) 
+        print('USD: ' + bank.usd_balance) 
         print '-----------------'
-        print('total: ' + total + self.bank.usd_balance)
-
-
-    @class_method
-    def ceiling_diff(self, price, algorithm):
-        return coin.price - algorithm.ceiling
-
-    @class_method
-    def floor_diff(self, coin, algorithm):
-        return coin.price - algorithm.floor
+        print('total: ' + total + bank.usd_balance)
