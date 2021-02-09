@@ -1,40 +1,34 @@
 class Transactor:
     def __init__(self, coin, algorithm, client):
-        self.algorithm = algorithm(coin.market)
-        self.coin      = coin
-        self.client    = client
-        self._reset_runs_since_last_transaction()
+        self.runs_since_last_transaction = 0
+        self.client                      = client
+        self.coin                        = coin
+        self.algorithm                   = algorithm
 
     def run(self):
-        if self.algorithm.time_to_buy():
-            self._buy_report()
-            self._run_buys()
-        elif self.algorithm.time_to_sell():
-            self._sell_report()
-            self._run_sales()
+        current_price = self.coin.update_price()
+        self.algorithm.process_change(current_price)
+        if self.algorithm.time_to_buy(current_price):
+            self._run_buys(current_price)
+        elif self.algorithm.time_to_sell(current_price):
+            self._run_sales(current_price)
         else:
             self.runs_since_last_transaction += 1
+        self.algorithm.set_for_next(current_price)
 
-    def _reset_runs_since_last_transaction(self):
-        self.runs_since_last_transaction = 0
-
-    def _reset_extreme_counts(self):
-        self.runs_in_valley = 0
-        self.runs_at_peak   = 0
-
-    def _run_buys(self):
+    def _run_buys(self, current_price):
         self.client.place_order(self.purchase_size)
-        self.algorithm.last_transaction_rate = self.price
-        self.algorithm._reset_runs_since_last()
-
-    def _run_sales(self):
-        self.algorithm.execute_sales()
-        self.last_transaction_rate = self.price
+        self.last_transaction_rate = current_price
         self.runs_since_last_transaction = 0
 
-    def _execute_sales(self):
+    def _run_sales(self, current_price):
+        self._execute_sales(current_price)
+        self.last_transaction_rate = current_price
+        self.runs_since_last_transaction = 0
+
+    def _execute_sales(self, current_price):
         total_to_sell = 0.0
-        for order in Order.profitable(self.price, self.market):
+        for order in Order.profitable(current_price, self.market):
             total_to_sell += (order.filled_size or 0)
             order.sold = True
             order.save()

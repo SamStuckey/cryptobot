@@ -1,4 +1,4 @@
-from cbot.clients.cb_client import CbClient
+from cbot.coin import Coin
 
 class Bank():
     coins = []
@@ -10,7 +10,7 @@ class Bank():
 
     def refresh_balances(self):
         self.usd_balance = client.usd_balance()
-        for coin in coins:
+        for coin in self.coins:
             coins[coin] = client.coin_balance(coin)
 
     def balances(self):
@@ -18,4 +18,4 @@ class Bank():
 
     def _create_coins(self, markets):
         for market in markets:
-            coins.append(Coin(market, client))
+            self.coins.append(Coin(market, self.client))

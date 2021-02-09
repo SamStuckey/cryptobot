@@ -1,7 +1,10 @@
 from sqlalchemy                 import Column, Integer, MetaData, String, func, Float
-from cbot.models                import Model
+from cbot.db                    import CRUD
+from sqlalchemy.ext.declarative import declarative_base
 
-class Order(Model):
+Base = declarative_base()
+
+class Order(Base, CRUD):
     __tablename__ = 'orders'
 
     #  CREATE TABLE orders (

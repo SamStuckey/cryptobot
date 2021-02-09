@@ -29,7 +29,6 @@ class Logger:
         print('floor diff: '       + str(self.floor_diff(coin, algorithm)))
         print('**')
         print('Trend: '            + algorithm.trend)
-        print('stabilized: '       + algorithm.stablabized())
         print('runs in price box:' + str(algorithm.runs_in_price_box))
         print('**')
         print('USD balance: '      + str(balance))

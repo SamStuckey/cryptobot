@@ -1,7 +1,7 @@
 from cbpro2 import PublicClient, AuthenticatedClient
 from decouple import config
 
-class CbClient():
+class CbClient:
     coinbase_key        = config('CB_API_PKEY')
     coinbase_secret     = config('CB_API_SKEY')
     coinbase_passphrase = config('CB_PASSPHRASE')
@@ -57,19 +57,18 @@ class CbClient():
             self._log_failure(resp, 'coin_balance')
 
 
-    def coin_price(self):
-        resp = self.pub_cli.get_product_ticker('BTC-USD')
+    def coin_price(self, market):
+        resp = self.pub_cli.get_product_ticker(market)
         if resp.status_code == 200:
             return float(resp.json().get('price'))
         else:
             self._log_failure(resp, 'current_coin_price')
 
-    def _log_failure(self, resp, method_name):
+    def _log_failure(self, resp, source):
         print('!!!!!!!!!!!!! API ERROR !!!!!!!!!!!!!')
-        print(method_name)
+        print(source)
         print(resp.status_code)
         print(resp.json())
-        raise Exception('!!!!!!!!!!!!! API ERROR !!!!!!!!!!!!!')
 
     def market(self):
         return self.market
