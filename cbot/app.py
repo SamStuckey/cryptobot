@@ -8,7 +8,7 @@ from cbot.logger             import Logger
 class Cbot:
     margin                = 0.011
     purchase_percentage   = 0.05
-    default_purchase_size = 50
+    min_purchase = 50
     markets               = ['BTC-USD', 'ETH-USD']
     transactors           = []
 
@@ -22,16 +22,15 @@ class Cbot:
         if price is None:
             return 0
         else:
-            self.price = float(price)
             try:
-                return self._run()
+                return self._run(float(price))
             except:
                 e = sys.exc_info()[0]
                 print('something went wrong')
                 print(e)
 
-    def _run(self):
-        self._make_money()
+    def _run(self, current_price): 
+        self._run_transactions(current_price)
         self._default_report()
         self._handle_run_count()
 
@@ -41,8 +40,7 @@ class Cbot:
             self.transactors.append(Transactor(coin,
                                                 algo,
                                                 self.purchase_percentage,
-                                                self.default_purchase_size,
-                                                self.client))
+                                                self.min_purchase))
 
     def _default_report(self):
         if self.runs % 100 == 0:
@@ -55,13 +53,9 @@ class Cbot:
         if self.runs % 100 == 0:
             self.runs = 1
 
-    def _make_money(self):
-        self._run_transactions()
-
-    def _run_transactions(self):
+    def _run_transactions(self, current_price):
         for transactor in self.transactors:
-            transactor.run()
+            transactor.run(self.bank.usd_balance)
 
     def _needs_update(self, ext_status, int_status):
         return ext_status != 'pending' and ext_status != int_status
-

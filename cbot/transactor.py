@@ -12,10 +12,10 @@ class Transactor:
 
     def run(self, usd_balance):
         self.coin.update_price()
-        self._run_available_transactions()
+        self._run_available_transactions(usd_balance)
         self.total_runs += 1
 
-    def _run_available_transactions(self):
+    def _run_available_transactions(self, usd_balance):
         if self.algorithm.time_to_buy(self.coin.price):
             self._run_buys(usd_balance)
         elif self.algorithm.time_to_sell(self.coin.price):
@@ -24,7 +24,7 @@ class Transactor:
             self.runs_since_last_transaction += 1
         self._update_pending_orders()
 
-    def _run_buys(self, usd_balance)
+    def _run_buys(self, usd_balance):
         if self._purchase_funds_available(usd_balance):
             self.coin.buy(self._purchase_size(usd_balance))
             self.last_transaction_rate = self.coin.price
@@ -40,7 +40,9 @@ class Transactor:
 
     def _execute_sales(self):
         total_to_sell = 0.0
-        for order in Order.profitable(self.coin.price, self.coin.market): total_to_sell += (order.filled_size or 0) order.sold = True
+        for order in Order.profitable(self.coin.price, self.coin.market):
+            total_to_sell += (order.filled_size or 0)
+            order.sold = True
             order.save()
 
         if total_to_sell > 0:

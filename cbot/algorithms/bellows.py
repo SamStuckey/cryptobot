@@ -1,33 +1,34 @@
 class Bellows:
     trend = 'd' # assume on start so we don't buy right away
-    self.runs_at_peak      = 0
-    self.runs_in_valley    = 0
-    self.runs_in_price_box = 0
+    runs_at_peak      = 0
+    runs_in_valley    = 0
+    runs_in_price_box = 0
+    last_price        = None
 
     def __init__(self, margin):
         self.margin = margin
 
     def time_to_sell(self, current_price):
         self._refresh_analysis(current_price)
-        return self.analysis.sell_rules_apply():
+        return self.analysis.sell_rules_apply()
 
     def time_to_buy(self, current_price):
         self._refresh_analysis(current_price)
-        return self.analysis.buy_rules_apply():
+        return self.analysis.buy_rules_apply()
 
     def _review_previous_analysis(self):
         if self.last_price != None:
             self._conditionally_update_limits()
-        else
+        else:
             self._reset_price_box()
 
     def _refresh_analysis(self, current_price):
-        if current_price != self.last_price
+        if current_price != self.last_price:
             self.last_price = self.current_price
             self.current_price = current_price
             self._run_analysis()
 
-    def _run_analysis(self)
+    def _run_analysis(self):
         self._review_previous_analysis()
         self._monitor_trend()
 
