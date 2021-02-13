@@ -5,6 +5,9 @@ from cbot.bank               import Bank
 from cbot.transactor         import Transactor
 from cbot.logger             import Logger
 
+#  [wipn]
+from cbot.coin import Coin
+
 class Cbot:
     margin                = 0.011
     purchase_percentage   = 0.05
@@ -30,6 +33,11 @@ class Cbot:
                 e = sys.exc_info()[0]
                 print('something went wrong')
                 print(e)
+
+    def test_run(self):
+        pass
+        #  coin = Coin('BTC-USD', 'BTC', self.client)
+        #  print(self.client.coin_balance(coin))
 
     def _run(self, current_price): 
         self._run_transactions(current_price)

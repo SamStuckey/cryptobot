@@ -23,4 +23,5 @@ class Bank():
 
     def _create_coins(self, markets):
         for market in markets:
-            self.coins.append(Coin(market, self.client))
+            symbol = market.replace('-USD', '')
+            self.coins.append(Coin(market, symbol, self.client))
