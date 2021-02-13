@@ -9,8 +9,8 @@ class Cbot:
     margin                = 0.011
     purchase_percentage   = 0.05
     min_purchase          = 50
-    markets               = ['BTC-USD', 'ETH-USD']
-    #  markets               = ['BTC-USD']
+    #  markets               = ['BTC-USD', 'ETH-USD']
+    markets               = ['BTC-USD']
     transactors           = []
 
     def __init__(self):
@@ -19,6 +19,7 @@ class Cbot:
         self._create_transactors()
 
     def __call__(self, price, runs):
+        print('RUN: ' + str(runs))
         self.runs = runs
         if price is None:
             return 0
@@ -48,11 +49,10 @@ class Cbot:
                                                 self.min_purchase))
 
     def _default_report(self):
-        #  [wipn] keep
-        #  if self.runs % 100 == 0:
-        for transactor in self.transactors:
-            Logger.default_report(transactor, self.bank.usd_balance)
-        Logger.report_cash_out_value(self.bank)
+        if self.runs % 10 == 0:
+            for transactor in self.transactors:
+                Logger.default_report(transactor, self.bank.usd_balance)
+            Logger.report_cash_out_value(self.bank)
 
     def _handle_run_count(self):
         self.runs += 1

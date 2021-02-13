@@ -3,6 +3,8 @@ class Bellows:
     runs_at_peak      = 0
     runs_in_valley    = 0
     runs_in_price_box = 0
+    ceiling           = 0
+    floor             = 0
     last_price        = None
 
     def __init__(self, margin):
@@ -10,11 +12,15 @@ class Bellows:
 
     def time_to_sell(self, current_price):
         self._refresh_analysis(current_price)
-        return self._sales_rules_apply()
+        #  [wipn] keep
+        #  return self._sales_rules_apply()
+        return False
 
     def time_to_buy(self, current_price):
         self._refresh_analysis(current_price)
-        return self._purchase_rules_apply()
+        #  [wipn] keep
+        #  return self._purchase_rules_apply()
+        return True
 
     def _sales_rules_apply(self):
         return self._new_peak() or self._new_down_trend()

@@ -4,27 +4,27 @@ class Logger:
     def buy_report(self, algorithm):
         print('')
         print('+++++++++++++++++ TIME TO BUY ++++++++++++++++++')
-        print('  new valley: '          + str(self.algorithm.new_valley()))
-        print('      trend: '           + self.algorithm.trend)
-        print('      runs_in_valley: '  + str(self.algorithm.runs_in_valley))
-        print('  moving_steadily_up: '  + str(self.algorithm.moving_steadily_up()))
-        print('      above_ceiling: '   + str(self.algorithm.above_ceiling()))
-        print('  new_up_trend: '        + str(self.algorithm.new_up_trend()))
-        print('      new_trend: '       + str(self.algorithm.new_trend))
-        print('+++++++++++++++++++++++++++++++++++++++++++++++++++')
-        print('')
+        #  print('  new valley: '          + str(algorithm.new_valley()))
+        #  print('      trend: '           + algorithm.trend)
+        #  print('      runs_in_valley: '  + str(algorithm.runs_in_valley))
+        #  print('  moving_steadily_up: '  + str(algorithm.moving_steadily_up()))
+        #  print('      above_ceiling: '   + str(algorithm.above_ceiling()))
+        #  print('  new_up_trend: '        + str(algorithm.new_up_trend()))
+        #  print('      new_trend: '       + str(algorithm.new_trend))
+        #  print('+++++++++++++++++++++++++++++++++++++++++++++++++++')
+        #  print('')
 
     @classmethod
     def sell_report(self, algorithm):
         print('')
         print('+++++++++++++++++ TIME TO SELL ++++++++++++++++++')
-        print('  _new_peak: '        + str(self._new_peak()))
-        print('      trend: '        + self.algorithm.trend)
-        print('      runs_at_peak: ' + str(self.algorithm.runs_at_peak))
-        print('  _new_down_trend: '  + str(self.algorithm.new_down_trend()))
-        print('      new_trend: '    + str(self.new_trend))
-        print('+++++++++++++++++++++++++++++++++++++++++++++++++++')
-        print('')
+        #  print('  _new_peak: '        + str(algorithm.new_peak()))
+        #  print('      trend: '        + algorithm.trend)
+        #  print('      runs_at_peak: ' + str(algorithm.runs_at_peak))
+        #  print('  _new_down_trend: '  + str(algorithm.new_down_trend()))
+        #  print('      new_trend: '    + str(new_trend))
+        #  print('+++++++++++++++++++++++++++++++++++++++++++++++++++')
+        #  print('')
 
     @classmethod
     def default_report(self, transactor, usd_balance):

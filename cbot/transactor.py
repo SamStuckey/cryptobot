@@ -32,12 +32,13 @@ class Transactor:
             self.runs_since_last_transaction += 1
         self._update_pending_orders()
 
+    #  [wipn] START HERE - create DB records from transactions
     def _run_buys(self, usd_balance):
         if self._purchase_funds_available(usd_balance):
             self.coin.buy(self.purchase_size(usd_balance))
             self.last_transaction_rate = self.coin.price
             self.runs_since_last_transaction = 0
-            Logger.buy_report
+            Logger.buy_report(self.algorithm)
 
     def _run_sales(self):
         self._execute_sales()
@@ -59,7 +60,6 @@ class Transactor:
 
     def _purchase_funds_available(self, usd_balance):
         return usd_balance >= self.purchase_size(usd_balance)
-
 
     def _update_pending_orders(self):
         for order in Order.pending():
