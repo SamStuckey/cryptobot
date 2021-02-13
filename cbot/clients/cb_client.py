@@ -56,7 +56,7 @@ class CbClient:
             self._log_failure(resp, 'usd_balance')
 
     def coin_price(self, coin):
-        print('API CALL: coin_price')
+        print('API CALL: coin_price: ' + coin.symbol)
         resp = self.pub_cli.get_product_ticker(coin.market)
         if resp.status_code == 200:
             print('success')
