@@ -10,6 +10,7 @@ class Cbot:
     purchase_percentage   = 0.05
     min_purchase          = 50
     markets               = ['BTC-USD', 'ETH-USD']
+    #  markets               = ['BTC-USD']
     transactors           = []
 
     def __init__(self):
@@ -40,10 +41,9 @@ class Cbot:
         self._handle_run_count()
 
     def _create_transactors(self):
-        algo = Bellows(self.margin)
         for coin in self.bank.coins:
             self.transactors.append(Transactor(coin,
-                                                algo,
+                                                Bellows(self.margin),
                                                 self.purchase_percentage,
                                                 self.min_purchase))
 
