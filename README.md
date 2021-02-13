@@ -1,11 +1,31 @@
-# WIPN TESt
+# Cryptobot
+
+This is a WIP algorytmic trading bot.  It's purpouse is for it's author to learn
+python.
+
+## DO NOT USE THIS WITH REAL MONEY
+I mean you can... I do.. but this was built by an engineer for engineery reasons,
+and the algorithm(s) herein are not to be taken as sound financial strategies.
+
 ## TODO:
-- add 'no response' handling to prevent erroneous transacting on bad data
-    Some times request will fail.  I have the choice of letting something blow up,
-    or failing it quietly.  If this is going to be long runningm, obviously I
-    don't want it blowing up, but I do need to find a way to monitor for 
-    API garbage responses, so I don't make a calculation with a '0' when I 
-    should have no value
+- Complete first refactor out of monolith
+    The first version of Cryptobot was essentiallly a 'hello world'.  now that I've
+    got it working, I'm updating it to have distinct models for 
+      - coins
+      - bank 
+      - transactor
+      - algorithms
+      - whatever else I come up with along the way
+
+- Add setup.py
+    Handle the dependencies for the app and Cbpro2
+
+- figure out a sustainable alternative to CBpro2
+    This is a quick fork of CBPro.  The reason it is included in this project
+    is simplly because CBPro doesn't return headers from it's API calls.  I should
+    probably submit a PR to the CBPro project to tweak this so i don't have to
+    maintain this library on my own.
+
 - update trend reversal logic to use velocity or buy / sell ratio
     I can make this way smarter by watching for shifts in market trends
     instead of hard numbers.  I think this will work best for buying, as it
@@ -13,14 +33,6 @@
     However, it's a little fuzzier on sales, as we want to avoid false positives.
     Maybe set up a more refined sale trigger that watches for both percentange
     changes and downticks, in conjunction with a hard stop loss below peaks.
-- balance not found problem
-    right now, my client is just returning 0 instead of None, but wtf...
-    why is my balance not always found?  what are the potential implications of 
-    this?
-    - race condition?
-- gummy sale mechanics...
-    selling all orders works via a simple test run, but when in the context of the
-    websocket it fails.
 
 ## Coinbase API response models
 ### MARKET BUY RESPONSE 

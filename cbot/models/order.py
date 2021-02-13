@@ -1,7 +1,6 @@
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy                 import Column, Integer, MetaData, String, func, Float
 from cbot.db                    import CRUD
-from sqlalchemy.orm.attributes  import flag_modified
+from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
@@ -18,7 +17,8 @@ class Order(Base, CRUD):
     #      product_id VARCHAR,
     #      status VARCHAR NOT NULL,
     #      settled VARCHAR,
-    #      side VARCHAR
+    #      side VARCHAR,
+    #      sold BOOLEAN NOT NULL DEFAULT FALSE
     #  );
 
     id                      = Column(Integer, primary_key=True)
@@ -31,6 +31,7 @@ class Order(Base, CRUD):
     status                  = Column('status', String)
     settled                 = Column('settled', String)
     side                    = Column('side', String)
+    sold                    = Column('sold', String)
 
     def __repr__(self):
         return '''
@@ -42,16 +43,19 @@ class Order(Base, CRUD):
                 product_id='%s',
                 status='%s',
                 settled='%s',
-                side='%s')>
+                side='%s',
+                sold='%s')>
         ''' % (self.purchase_rate, self.filled_size,
                self.minimum_profitable_rate, self.executed_value,
                self.external_id, self.product_id, self.status,
-               self.settled, self.side) 
+               self.settled, self.side, self.sold) 
 
     @classmethod
     def profitable(self, current_price):
         return self.query(self).filter(
-                self.minimum_profitable_rate <= float(current_price)).all()
+                self.minimum_profitable_rate <= float(current_price),
+                sold == False,
+                side == 'buy').all()
 
     @classmethod
     def pending(self):
