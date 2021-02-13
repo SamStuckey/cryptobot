@@ -4,13 +4,13 @@ class Logger:
     def buy_report(self, algorithm):
         print('')
         print('+++++++++++++++++ TIME TO BUY ++++++++++++++++++')
-        print('    new valley: '          + str(self.algorithm.new_valley()))
-        print('        trend: '           + self.algorithm.trend)
-        print('        runs_in_valley: '  + str(self.algorithm.runs_in_valley))
-        print('    moving_steadily_up: '  + str(self.algorithm.moving_steadily_up()))
-        print('        above_ceiling: '   + str(self.algorithm.above_ceiling()))
-        print('    new_up_trend: '        + str(self.algorithm.new_up_trend()))
-        print('        new_trend: '       + str(self.algorithm.new_trend))
+        print('  new valley: '          + str(self.algorithm.new_valley()))
+        print('      trend: '           + self.algorithm.trend)
+        print('      runs_in_valley: '  + str(self.algorithm.runs_in_valley))
+        print('  moving_steadily_up: '  + str(self.algorithm.moving_steadily_up()))
+        print('      above_ceiling: '   + str(self.algorithm.above_ceiling()))
+        print('  new_up_trend: '        + str(self.algorithm.new_up_trend()))
+        print('      new_trend: '       + str(self.algorithm.new_trend))
         print('+++++++++++++++++++++++++++++++++++++++++++++++++++')
         print('')
 
@@ -18,11 +18,11 @@ class Logger:
     def sell_report(self, algorithm):
         print('')
         print('+++++++++++++++++ TIME TO SELL ++++++++++++++++++')
-        print('    _new_peak: '        + str(self._new_peak()))
-        print('        trend: '        + self.algorithm.trend)
-        print('        runs_at_peak: ' + str(self.algorithm.runs_at_peak))
-        print('    _new_down_trend: '  + str(self.algorithm.new_down_trend()))
-        print('        new_trend: '    + str(self.new_trend))
+        print('  _new_peak: '        + str(self._new_peak()))
+        print('      trend: '        + self.algorithm.trend)
+        print('      runs_at_peak: ' + str(self.algorithm.runs_at_peak))
+        print('  _new_down_trend: '  + str(self.algorithm.new_down_trend()))
+        print('      new_trend: '    + str(self.new_trend))
         print('+++++++++++++++++++++++++++++++++++++++++++++++++++')
         print('')
 
@@ -49,7 +49,7 @@ class Logger:
 
     @classmethod
     def report_cash_out_value(self, bank):
-        print('$$$$$$$$$$$$$$$ COIN BALANCE VALUES: $$$$$$$$$$$$$$$$$')
+        print('$$$$$$$$$$$$$ COIN BALANCE VALUES: $$$$$$$$$$$$$')
         total = 0
         for coin in bank.coins:
             total += coin.worth()
@@ -57,5 +57,5 @@ class Logger:
         print('  USD: ' + str(bank.usd_balance)) 
         print('  -----------------')
         print('  TOTAL: ' + str(bank.cash_out_value()))
-        print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
+        print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
         print('')
