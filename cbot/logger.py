@@ -21,31 +21,31 @@ class Logger:
         print('        new_trend: '    + str(self.new_trend))
 
     @classmethod
-    def default_report(self, transactor, balance):
-        ceil_diff  = coin.price - algorithm.ceiling
-        floor_diff = coin.price - algorithm.floor
+    def default_report(self, transactor, usd_balance):
+        ceil_diff  = transactor.coin.price - transactor.algorithm.ceiling
+        floor_diff = transactor.coin.price - transactor.algorithm.floor
 
-        print('market: '           + self.market)
-        print('Coin price: '       + str(coin.price))
-        print('ceiling: '          + str(algorithm.ceiling))
-        print('floor: '            + str(algorithm.floor))
+        print('market: '           + str(transactor.coin.market))
+        print('Coin price: '       + str(transactor.coin.price))
+        print('ceiling: '          + str(transactor.algorithm.ceiling))
+        print('floor: '            + str(transactor.algorithm.floor))
         print('ceiling diff: '     + str(ceil_diff))
         print('floor diff: '       + str(floor_diff))
         print('**')
-        print('Trend: '            + algorithm.trend)
-        print('runs in price box:' + str(algorithm.runs_in_price_box))
+        print('Trend: '            + transactor.algorithm.trend)
+        print('runs in price box:' + str(transactor.algorithm.runs_in_price_box))
         print('**')
-        print('USD balance: '      + str(balance))
-        print('Coin balance: '     + str(coin.balance))
-        print('purchase size: '    + str(coin.purchase_size))
+        print('USD balance: '      + str(usd_balance))
+        print('Coin balance: '     + str(transactor.coin.balance))
+        print('purchase size: '    + str(transactor.purchase_size(usd_balance)))
         print('---------------------------')
 
     @classmethod
     def report_cash_out_value(self, bank):
         total = 0
-        for coin in bank.coins():
-            total += coin.worth
-            print(str(coin.symbol) + ': ' + str(coin.worth))
+        for coin in bank.coins:
+            total += coin.worth()
+            print(str(coin.symbol) + ': ' + str(coin.worth()))
         print('USD: ' + bank.usd_balance) 
         print('-----------------')
         print('total: ' + total + bank.usd_balance)

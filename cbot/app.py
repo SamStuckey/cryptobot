@@ -8,8 +8,10 @@ from cbot.logger             import Logger
 class Cbot:
     margin                = 0.011
     purchase_percentage   = 0.05
-    min_purchase = 50
-    markets               = ['BTC-USD', 'ETH-USD']
+    min_purchase          = 50
+    #  [wipn]
+    #  markets               = ['BTC-USD', 'ETH-USD']
+    markets               = ['BTC-USD']
     transactors           = []
 
     def __init__(self):
@@ -43,10 +45,11 @@ class Cbot:
                                                 self.min_purchase))
 
     def _default_report(self):
-        if self.runs % 100 == 0:
-            for transactor in self.transactors:
-                Loger.default_report(transactor, self.usd_balance)
-            Logger.report_cash_out_value(self.bank)
+        #  [wipn] keep
+        #  if self.runs % 100 == 0:
+        for transactor in self.transactors:
+            Logger.default_report(transactor, self.bank.usd_balance)
+        Logger.report_cash_out_value(self.bank)
 
     def _handle_run_count(self):
         self.runs += 1

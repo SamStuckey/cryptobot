@@ -17,7 +17,7 @@ class Order(Base, CRUD):
     #      product_id VARCHAR,
     #      status VARCHAR NOT NULL,
     #      settled VARCHAR,
-    #      side VARCHAR
+    #      side VARCHAR,
     #      sold BOOLEAN NOT NULL DEFAULT FALSE
     #  );
 

@@ -1,8 +1,9 @@
-from cbot.logger import Logger
+from cbot.logger       import Logger
+from cbot.models.order import Order
 
 class Transactor:
     runs_since_last_transaction = 0
-    total_runs = 0
+    total_runs                  = 0
 
     def __init__(self, coin, algorithm, purchase_percentage, min_purchase):
         self.coin                = coin
@@ -15,6 +16,13 @@ class Transactor:
         self._run_available_transactions(usd_balance)
         self.total_runs += 1
 
+    def purchase_size(self, usd_balance):
+        percentage_based = usd_balance * self.purchase_percentage
+        if percentage_based < self.min_purchase:
+            return self.min_purchase
+        else:
+            return percentage_based
+
     def _run_available_transactions(self, usd_balance):
         if self.algorithm.time_to_buy(self.coin.price):
             self._run_buys(usd_balance)
@@ -26,11 +34,10 @@ class Transactor:
 
     def _run_buys(self, usd_balance):
         if self._purchase_funds_available(usd_balance):
-            self.coin.buy(self._purchase_size(usd_balance))
+            self.coin.buy(self.purchase_size(usd_balance))
             self.last_transaction_rate = self.coin.price
             self.runs_since_last_transaction = 0
             Logger.buy_report
-
 
     def _run_sales(self):
         self._execute_sales()
@@ -51,15 +58,7 @@ class Transactor:
             new_order = Order.create(result)
 
     def _purchase_funds_available(self, usd_balance):
-        return usd_balance >= self._purchase_size(usd_balance)
-
-    def _purchase_size(self, usd_balance):
-        percentage_based = usd_balance * self.purchase_percentage
-
-        if percentage_based < self.min_purchase:
-            return self.min_purchase
-        else:
-            return percentage_based
+        return usd_balance >= self.purchase_size(usd_balance)
 
 
     def _update_pending_orders(self):
