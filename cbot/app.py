@@ -9,8 +9,8 @@ class Cbot:
     margin                = 0.011
     purchase_percentage   = 0.05
     min_purchase          = 50
-    #  markets               = ['BTC-USD', 'ETH-USD']
-    markets               = ['BTC-USD']
+    markets               = ['BTC-USD', 'ETH-USD']
+    #  markets               = ['BTC-USD']
     transactors           = []
 
     def __init__(self):
