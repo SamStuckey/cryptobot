@@ -35,10 +35,12 @@ class Transactor:
     #  [wipn] START HERE - create DB records from transactions
     def _run_buys(self, usd_balance):
         if self._purchase_funds_available(usd_balance):
-            self.coin.buy(self.purchase_size(usd_balance))
-            self.last_transaction_rate = self.coin.price
-            self.runs_since_last_transaction = 0
-            Logger.buy_report(self.algorithm)
+            resp = self.coin.buy(self.purchase_size(usd_balance))
+            if resp != None:
+                Order.create(resp)
+                self.last_transaction_rate = self.coin.price
+                self.runs_since_last_transaction = 0
+                Logger.buy_report(self.algorithm)
 
     def _run_sales(self):
         self._execute_sales()

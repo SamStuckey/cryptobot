@@ -65,6 +65,22 @@ class Order(Base, CRUD):
     def all(self):
         return self.query(self).all()
 
+    '''
+    {'id': 'ea42b460-12ba-4509-978b-ab7a37474d20',
+     'product_id': 'BTC-USD',
+     'side': 'buy',
+     'stp': 'dc',
+     'funds': '49.75124378',
+     'specified_funds': '50',
+     'type': 'market',
+     'post_only': False,
+     'created_at': '2021-02-14T23:20:48.92679Z',
+     'fill_fees': '0',
+     'filled_size': '0',
+     'executed_value': '0',
+     'status': 'pending',
+     'settled': False}
+    '''
     @classmethod
     def create(self, record):
         order = Order(
@@ -73,7 +89,8 @@ class Order(Base, CRUD):
                 product_id=record.get('product_id'),
                 status=record.get('status'),
                 settled=record.get('settled'),
-                side=record.get('side')
+                side=record.get('side'),
+                sold=False
             )
         order.save()
         return order

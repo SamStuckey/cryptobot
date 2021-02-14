@@ -1,9 +1,9 @@
 from cbot.clients.cb_client  import CbClient
-from cbot.models.order       import Order
 from cbot.algorithms.bellows import Bellows
 from cbot.bank               import Bank
 from cbot.transactor         import Transactor
 from cbot.logger             import Logger
+from cbot.models.order       import Order
 
 class Cbot:
     margin                = 0.011
@@ -32,9 +32,15 @@ class Cbot:
                 print(e)
 
     def test_run(self):
-        from cbot.coin import Coin
-        coin = Coin('BTC-USD', 'BTC', self.client)
-        print(self.client.coin_balance(coin))
+        pass
+        #  from cbot.coin import Coin
+        #  for order in Order.pending():
+        #      cb_record = self.client.get_order(order.external_id)
+        #      if self._needs_update(cb_record.get('status'), order.status):
+        #          order.execute(cb_record)
+        #  resp = coin.buy(50)
+        #  print(resp)
+        #  Order.create(resp)
 
     def _run(self, current_price): 
         self._run_transactions(current_price)
