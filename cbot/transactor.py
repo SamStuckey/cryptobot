@@ -21,7 +21,7 @@ class Transactor:
         if percentage_based < self.min_purchase:
             return self.min_purchase
         else:
-            return percentage_based
+            return round(percentage_based, 2
 
     def _run_available_transactions(self, usd_balance):
         if self.algorithm.time_to_buy(self.coin.price):
