@@ -12,15 +12,11 @@ class Bellows:
 
     def time_to_sell(self, current_price):
         self._refresh_analysis(current_price)
-        #  [wipn] keep
-        #  return self._sales_rules_apply()
-        return False
+        return self._sales_rules_apply()
 
     def time_to_buy(self, current_price):
         self._refresh_analysis(current_price)
-        #  [wipn] keep
-        #  return self._purchase_rules_apply()
-        return True
+        return self._purchase_rules_apply()
 
     def _sales_rules_apply(self):
         return self._new_peak() or self._new_down_trend()
