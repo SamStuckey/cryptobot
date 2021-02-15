@@ -42,8 +42,11 @@ class Cbot:
         #  Order.create(resp)
 
     def _run(self, current_price): 
-        self._run_transactions(current_price)
-        self._default_report()
+        if self.runs % 2 == 0:
+            self._run_transactions(current_price)
+        else:
+            self._update_pending_orders()
+        #  self._default_report()
         self._handle_run_count()
 
     def _create_transactors(self):
@@ -52,6 +55,13 @@ class Cbot:
                                                 Bellows(self.margin),
                                                 self.purchase_percentage,
                                                 self.min_purchase))
+
+
+    def _update_pending_orders(self):
+        for order in Order.pending():
+            cb_record = self.client.get_order(order.external_id)
+            if self._needs_update(cb_record.get('status'), order.status):
+                order.execute(cb_record)
 
     def _default_report(self):
         if self.runs % 10 == 0:

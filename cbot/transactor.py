@@ -21,7 +21,7 @@ class Transactor:
         if percentage_based < self.min_purchase:
             return self.min_purchase
         else:
-            return round(percentage_based, 2
+            return round(percentage_based, 2)
 
     def _run_available_transactions(self, usd_balance):
         if self.algorithm.time_to_buy(self.coin.price):
@@ -30,9 +30,7 @@ class Transactor:
             self._run_sales()
         else:
             self.runs_since_last_transaction += 1
-        self._update_pending_orders()
-
-    #  [wipn] START HERE - create DB records from transactions
+    
     def _run_buys(self, usd_balance):
         if self._purchase_funds_available(usd_balance):
             resp = self.coin.buy(self.purchase_size(usd_balance))
@@ -62,9 +60,3 @@ class Transactor:
 
     def _purchase_funds_available(self, usd_balance):
         return usd_balance >= self.purchase_size(usd_balance)
-
-    def _update_pending_orders(self):
-        for order in Order.pending():
-            cb_record = self.client.get_order(order.external_id)
-            if self._needs_update(cb_record.get('status'), order.status):
-                order.execute(cb_record)
