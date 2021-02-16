@@ -8,6 +8,9 @@ I mean you can... I do.. but this was built by an engineer for engineery reasons
 and the algorithm(s) herein are not to be taken as sound financial strategies.
 
 ## TODO:
+- Refactor out redundant methodsf
+  - `refresh_foo` should become `foo(refresh=False)`
+  - remove duplicates and kruft
 - Complete first refactor out of monolith
     The first version of Cryptobot was essentiallly a 'hello world'.  now that I've
     got it working, I'm updating it to have distinct models for 
